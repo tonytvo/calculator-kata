@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "approvals": "^7.1.1",
-    "fp-ts": "^2.16.1"
+    "effect": "^3.4.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
