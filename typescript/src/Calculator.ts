@@ -1,5 +1,7 @@
 import {Either as E, Option as O, pipe} from "effect";
 
+// we are currently at https://fsharpforfunandprofit.com/posts/calculator-implementation/#implementation-handling-math-operations
+
 type CalculatorInput = { tag: "CalculatorDigit", value: CalculatorDigit } |
     { tag: "CalculatorOperation", value: CalculatorOperation } |
     { tag: "CalculatorAction", value: CalculatorAction };
