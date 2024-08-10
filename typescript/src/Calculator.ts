@@ -76,14 +76,21 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
         return newState;
     }
 
-    function bananaSauce([op, pendingNumber, currentNumber]: [CalculatorOperation, CalculatorNumber, number]): MathOperationResult {
+    function doOperation([op, pendingNumber, currentNumber]: [CalculatorOperation, CalculatorNumber, number]): MathOperationResult {
         return services.doMathOperation(op, pendingNumber, currentNumber);
     }
 
-    const combineArgs = ([a, b]: [CalculatorOperation, number], c: CalculatorNumber): [CalculatorOperation, number, CalculatorNumber] => [a, b, c]
-    let calculatorCombinedInputs = O.zipWith(state.pendingOperation, services.getDisplayNumber(state.display), combineArgs);
+    function combineArgs([a, b]: [CalculatorOperation, number], c: CalculatorNumber): [CalculatorOperation, number, CalculatorNumber] {
+        return [a, b, c];
+    }
+
+    let calculatorCombinedInputs =
+        O.zipWith(state.pendingOperation,
+            services.getDisplayNumber(state.display),
+            combineArgs);
+
     return pipe(calculatorCombinedInputs,
-        O.map(bananaSauce),
+        O.map(doOperation),
         O.map(E.match(
             {
                 onLeft: updateDisplayAndState,
