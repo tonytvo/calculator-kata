@@ -1,4 +1,4 @@
-import {Option as O, Either as E, pipe} from "effect";
+import {Either as E, Option as O, pipe} from "effect";
 
 type CalculatorInput = { tag: "CalculatorDigit", value: CalculatorDigit } |
     { tag: "CalculatorOperation", value: CalculatorOperation } |
@@ -72,16 +72,17 @@ function updateDisplayFromDigit(services: CalculatorServices, value: CalculatorD
 
 export function updateDisplayFromPendingOp(services: CalculatorServices, state: CalculatorState) {
 
-    function updateDisplayAndStateWIthError(mathOperationError: MathOperationError) : CalculatorState {
-        const newDisplay = services.setDisplayError(mathOperationError);
-        const newState = Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
-        return newState;
+    function updateDisplayAndStateWithError(mathOperationError: MathOperationError) : CalculatorDisplay {
+        return services.setDisplayError(mathOperationError);
     }
 
-    function updateDisplayAndState(data: CalculatorNumber): CalculatorState {
-        const newDisplay = services.setDisplayNumber(data);
-        const newState = Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
-        return newState;
+
+    function displayToState(newDisplay: string) {
+        return Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
+    }
+
+    function updateDisplayAndState(data: CalculatorNumber): CalculatorDisplay {
+        return services.setDisplayNumber(data);
     }
 
     function doOperation([op, pendingNumber, currentNumber]: [CalculatorOperation, CalculatorNumber, number]): MathOperationResult {
@@ -102,9 +103,10 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
         O.map(E.match(
             {
                 onLeft: updateDisplayAndState,
-                onRight: updateDisplayAndStateWIthError
+                onRight: updateDisplayAndStateWithError
             })
         ),
+        O.map(displayToState),
         O.getOrElse(() => state));
 }
 
