@@ -52,7 +52,7 @@ type UpdateDisplayFromDigit = (digit: CalculatorDigit, display: CalculatorDispla
 
 type GetDisplayNumber = (display: CalculatorDisplay) => O.Option<CalculatorNumber>
 type SetDisplayNumber = (number: CalculatorNumber) => CalculatorDisplay
-
+type SetDisplayError = (error: MathOperationError) => CalculatorDisplay
 type InitState = () => CalculatorState
 
 export type CalculatorServices = {
@@ -60,6 +60,7 @@ export type CalculatorServices = {
     doMathOperation: DoMathOperation
     getDisplayNumber: GetDisplayNumber
     setDisplayNumber: SetDisplayNumber
+    setDisplayError: SetDisplayError
     initState: InitState
 }
 
@@ -70,6 +71,13 @@ function updateDisplayFromDigit(services: CalculatorServices, value: CalculatorD
 }
 
 export function updateDisplayFromPendingOp(services: CalculatorServices, state: CalculatorState) {
+
+    function updateDisplayAndStateWIthError(mathOperationError: MathOperationError) : CalculatorState {
+        const newDisplay = services.setDisplayError(mathOperationError);
+        const newState = Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
+        return newState;
+    }
+
     function updateDisplayAndState(data: CalculatorNumber): CalculatorState {
         const newDisplay = services.setDisplayNumber(data);
         const newState = Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
@@ -94,7 +102,7 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
         O.map(E.match(
             {
                 onLeft: updateDisplayAndState,
-                onRight: (error: MathOperationError) => state
+                onRight: updateDisplayAndStateWIthError
             })
         ),
         O.getOrElse(() => state));
