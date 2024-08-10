@@ -71,18 +71,8 @@ function updateDisplayFromDigit(services: CalculatorServices, value: CalculatorD
 }
 
 export function updateDisplayFromPendingOp(services: CalculatorServices, state: CalculatorState) {
-
-    function updateDisplayAndStateWithError(mathOperationError: MathOperationError) : CalculatorDisplay {
-        return services.setDisplayError(mathOperationError);
-    }
-
-
     function displayToState(newDisplay: string) {
         return Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
-    }
-
-    function updateDisplayAndState(data: CalculatorNumber): CalculatorDisplay {
-        return services.setDisplayNumber(data);
     }
 
     function doOperation([op, pendingNumber, currentNumber]: [CalculatorOperation, CalculatorNumber, number]): MathOperationResult {
@@ -102,8 +92,8 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
         O.map(doOperation),
         O.map(E.match(
             {
-                onLeft: updateDisplayAndState,
-                onRight: updateDisplayAndStateWithError
+                onLeft: services.setDisplayNumber,
+                onRight: services.setDisplayError
             })
         ),
         O.map(displayToState),
