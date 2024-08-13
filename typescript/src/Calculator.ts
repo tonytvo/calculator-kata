@@ -118,11 +118,9 @@ function updateWithAction(services: CalculatorServices, value: CalculatorAction,
 function addPendingMathOp(services: CalculatorServices, op: CalculatorOperation, state: CalculatorState) {
     let currentNumberOpt = services.getDisplayNumber(state.display);
     if (O.isSome(currentNumberOpt)) {
-        let currentNumber = currentNumberOpt.value
-        let pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, currentNumber])
-
-        let newState = Object.assign({}, state, {pendingOp: pendingOp});
-        return newState //return
+        const currentNumber = currentNumberOpt.value
+        const pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, currentNumber])
+        return Object.assign({}, state, {pendingOp}) //return
     } else {
         return state // original state is untouched
     }
