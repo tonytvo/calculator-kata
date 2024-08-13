@@ -116,14 +116,15 @@ function updateWithAction(services: CalculatorServices, value: CalculatorAction,
 }
 
 function addPendingMathOp(services: CalculatorServices, op: CalculatorOperation, state: CalculatorState) {
-    let currentNumberOpt = services.getDisplayNumber(state.display);
-    return O.match(currentNumberOpt, {
-        onNone: () => state,
-        onSome: (value) => {
-            const pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, value])
-            return Object.assign({}, state, {pendingOp}) //return
-        }
-    });
+    function updatePendingOp(value: CalculatorNumber): CalculatorState {
+        const pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, value])
+        return Object.assign({}, state, {pendingOp});
+    }
+
+    return pipe(state.display,
+        services.getDisplayNumber,
+        O.map(updatePendingOp),
+        O.getOrElse(() => state));
 }
 
 function createCalculate(services: CalculatorServices): Calculate {
