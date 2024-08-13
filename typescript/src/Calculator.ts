@@ -117,13 +117,13 @@ function updateWithAction(services: CalculatorServices, value: CalculatorAction,
 
 function addPendingMathOp(services: CalculatorServices, op: CalculatorOperation, state: CalculatorState) {
     let currentNumberOpt = services.getDisplayNumber(state.display);
-    if (O.isSome(currentNumberOpt)) {
-        const currentNumber = currentNumberOpt.value
-        const pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, currentNumber])
-        return Object.assign({}, state, {pendingOp}) //return
-    } else {
-        return state // original state is untouched
-    }
+    return O.match(currentNumberOpt, {
+        onNone: () => state,
+        onSome: (value) => {
+            const pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, value])
+            return Object.assign({}, state, {pendingOp}) //return
+        }
+    });
 }
 
 function createCalculate(services: CalculatorServices): Calculate {
