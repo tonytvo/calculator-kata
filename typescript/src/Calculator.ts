@@ -1,6 +1,6 @@
 import {Either as E, Option as O, pipe} from "effect";
 
-// we are currently at https://fsharpforfunandprofit.com/posts/calculator-implementation/#implementation-handling-math-operations
+// we are currently at https://fsharpforfunandprofit.com/posts/calculator-complete-v1/
 
 type CalculatorInput = { tag: "CalculatorDigit", value: CalculatorDigit } |
     { tag: "CalculatorOperation", value: CalculatorOperation } |
@@ -92,6 +92,12 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
 
     return pipe(calculatorCombinedInputs,
         O.map(doOperation),
+        // O.map(E.match(
+        //     {
+        //         onLeft: services.setDisplayNumber,
+        //         onRight: services.setDisplayError
+        //     })
+        // ),
         O.map(E.match(
             {
                 onLeft: services.setDisplayNumber,
