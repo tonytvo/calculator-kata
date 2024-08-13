@@ -72,7 +72,7 @@ function updateDisplayFromDigit(services: CalculatorServices, value: CalculatorD
     return newState;
 }
 
-export function updateDisplayFromPendingOp(services: CalculatorServices, state: CalculatorState) {
+export function updateDisplayFromPendingOp(services: CalculatorServices, state: CalculatorState): CalculatorState {
     function displayToState(newDisplay: string) {
         return Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
     }
@@ -115,6 +115,19 @@ function updateWithAction(services: CalculatorServices, value: CalculatorAction,
     return undefined;
 }
 
+function addPendingMathOp(services: CalculatorServices, op: CalculatorOperation, state: CalculatorState) {
+    let currentNumberOpt = services.getDisplayNumber(state.display);
+    if (O.isSome(currentNumberOpt)) {
+        let currentNumber = currentNumberOpt.value
+        let pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, currentNumber])
+
+        let newState = Object.assign({}, state, {pendingOp: pendingOp});
+        return newState //return
+    } else {
+        return state // original state is untouched
+    }
+}
+
 function createCalculate(services: CalculatorServices): Calculate {
     return (input, state) => {
         switch (input.tag) {
@@ -124,6 +137,9 @@ function createCalculate(services: CalculatorServices): Calculate {
                 return updateWithAction(services, input.value, state);
                 break;
             case "CalculatorOperation":
+                const newState1 = updateDisplayFromPendingOp(services, state);
+                const newState2 = addPendingMathOp(services, input.value, newState1);
+                return newState2;
                 break;
             default:
                 const _check: never = input;
