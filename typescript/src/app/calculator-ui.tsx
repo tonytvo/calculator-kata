@@ -2,12 +2,96 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
+import * as Domain from "../Calculator"
+import { Either as E, Option as O } from 'effect'
+import {CalculatorDigit, CalculatorOperation} from "../Calculator";
 
 export default function Calculator() {
   const [display, setDisplay] = useState('0')
   const [currentOperation, setCurrentOperation] = useState(null)
   const [previousValue, setPreviousValue] = useState(null)
   const [shouldResetDisplay, setShouldResetDisplay] = useState(false)
+
+  const services: Domain.CalculatorServices = {
+    updateDisplayFromDigit: function (digit: Domain.CalculatorDigit, display: Domain.CalculatorDisplay): Domain.CalculatorDisplay {
+      let newDigit = "";
+      switch (digit) {
+        case CalculatorDigit.Zero:
+          newDigit = "0";
+          // todo deal with special cases
+          break;
+        case CalculatorDigit.One:
+          newDigit = "1";
+          break;
+        case CalculatorDigit.Two:
+          newDigit = "2";
+          break;
+        case CalculatorDigit.Three:
+          newDigit = "3";
+          break;
+        case CalculatorDigit.Four:
+          newDigit = "4";
+          break;
+        case CalculatorDigit.Five:
+          newDigit = "5";
+          break;
+        case CalculatorDigit.Six:
+          newDigit = "6";
+          break;
+        case CalculatorDigit.Seven:
+          newDigit = "7";
+          break;
+        case CalculatorDigit.Eight:
+          newDigit = "8";
+          break;
+        case CalculatorDigit.Nine:
+          newDigit = "9";
+          break;
+        case CalculatorDigit.DecimalSeparator:
+          newDigit = ".";
+          // todo deal with special cases
+          break;
+      }
+
+      //todo deal with display length special cases
+      return display + newDigit;
+    },
+    doMathOperation: function (operation: Domain.CalculatorOperation, a: Domain.CalculatorNumber, b: Domain.CalculatorNumber): Domain.MathOperationResult {
+      switch (operation) {
+        case CalculatorOperation.Add:
+          return E.left(a+b);
+        case CalculatorOperation.Subtract:
+          return E.left(a-b);
+        case CalculatorOperation.Multiply:
+          return E.left(a*b);
+        case CalculatorOperation.Divide:
+          if (b === 0) {
+            return E.right(Domain.MathOperationError.DivideByZero);
+          }
+          return E.left(a/b);
+      }
+    },
+
+    getDisplayNumber: function (display: Domain.CalculatorDisplay): O.Option<Domain.CalculatorNumber> {
+      const displayNumber = parseFloat(display);
+      if (isNaN(displayNumber)) {
+        return O.none();
+      }
+      return O.some(displayNumber);
+    },
+
+    setDisplayNumber: function (number: Domain.CalculatorNumber): Domain.CalculatorDisplay {
+      return number.toString();
+    },
+
+    setDisplayError: function (error: Domain.MathOperationError): Domain.CalculatorDisplay {
+      return "E";
+    },
+
+    initState: function (): Domain.CalculatorState {
+      return {display: "", pendingOperation: O.none()};
+    }
+  }
 
   const handleNumberClick = (number: number) => {
     if (display === '0' || shouldResetDisplay) {
