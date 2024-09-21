@@ -42,7 +42,7 @@ enum CalculatorAction {
 export type CalculatorNumber = number
 
 type DoMathOperation = (operation: CalculatorOperation, a: CalculatorNumber, b: CalculatorNumber) => MathOperationResult;
-type Calculate = (input: CalculatorInput, state: CalculatorState) => CalculatorOutput
+export type Calculate = (input: CalculatorInput, state: CalculatorState) => CalculatorState;
 
 export enum MathOperationError {
     DivideByZero
@@ -108,7 +108,7 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
         O.getOrElse(() => state));
 }
 
-function updateWithAction(services: CalculatorServices, value: CalculatorAction, state: CalculatorState) {
+function updateWithAction(services: CalculatorServices, value: CalculatorAction, state: CalculatorState): CalculatorState {
     switch (value) {
         case CalculatorAction.Clear:
             return services.initState();
@@ -118,7 +118,6 @@ function updateWithAction(services: CalculatorServices, value: CalculatorAction,
             const _check: never = value;
             return _check;
     }
-    return undefined;
 }
 
 function addPendingMathOp(services: CalculatorServices, op: CalculatorOperation, state: CalculatorState) {
@@ -133,8 +132,8 @@ function addPendingMathOp(services: CalculatorServices, op: CalculatorOperation,
         O.getOrElse(() => state));
 }
 
-function createCalculate(services: CalculatorServices): Calculate {
-    return (input, state) => {
+export function createCalculate(services: CalculatorServices): Calculate {
+    return (input, state): CalculatorState => {
         switch (input.tag) {
             case "CalculatorDigit":
                 return updateDisplayFromDigit(services, input.value, state);

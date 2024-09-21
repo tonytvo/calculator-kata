@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
+import {useState} from 'react'
+import {Button} from "@/components/ui/button"
 import * as Domain from "../Calculator"
-import { Either as E, Option as O } from 'effect'
-import {CalculatorDigit, CalculatorOperation} from "../Calculator";
+import {Calculate, CalculatorDigit, CalculatorOperation, CalculatorState, createCalculate} from "../Calculator"
+import {Either as E, Option as O} from 'effect'
 
 export default function Calculator() {
   const [display, setDisplay] = useState('0')
@@ -92,8 +92,41 @@ export default function Calculator() {
       return {display: "", pendingOperation: O.none()};
     }
   }
-
+  const calculate: Calculate = createCalculate(services);
   const handleNumberClick = (number: number) => {
+    const calculatorInputConvertor = (number: number) => {
+      switch (number) {
+        case 0:
+          return CalculatorDigit.Zero;
+        case 1:
+          return CalculatorDigit.One;
+        case 2:
+          return CalculatorDigit.Two;
+        case 3:
+          return CalculatorDigit.Three;
+        case 4:
+          return CalculatorDigit.Four;
+        case 5:
+          return CalculatorDigit.Five;
+        case 6:
+          return CalculatorDigit.Six;
+        case 7:
+          return CalculatorDigit.Seven;
+        case 8:
+          return CalculatorDigit.Eight;
+        case 9:
+          return CalculatorDigit.Nine;
+        default:
+          //todo consider using _check
+          return CalculatorDigit.Zero;
+      }
+    };
+
+    let state: CalculatorState = services.initState();
+    state = calculate({
+      tag: "CalculatorDigit",
+      value: calculatorInputConvertor(number)
+    }, state);
     if (display === '0' || shouldResetDisplay) {
       setDisplay(number.toString())
       setShouldResetDisplay(false)
@@ -139,22 +172,22 @@ export default function Calculator() {
   }
 
   return (
-    <div className="w-64 mx-auto p-4 bg-gray-100 rounded-lg shadow-md">
-      <div className="mb-4 p-2 bg-white rounded text-right text-2xl font-bold h-12 overflow-hidden">
-        {display}
+      <div className="w-64 mx-auto p-4 bg-gray-100 rounded-lg shadow-md">
+        <div className="mb-4 p-2 bg-white rounded text-right text-2xl font-bold h-12 overflow-hidden">
+          {display}
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {[7, 8, 9, 4, 5, 6, 1, 2, 3, 0].map((num) => (
+              <Button key={num} onClick={() => handleNumberClick(num)} variant="outline">
+                {num}
+              </Button>
+          ))}
+          <Button onClick={() => handleOperationClick('+')} variant="secondary">+</Button>
+          <Button onClick={() => handleOperationClick('-')} variant="secondary">-</Button>
+          <Button onClick={() => handleOperationClick('*')} variant="secondary">*</Button>
+          <Button onClick={handleEquals} variant="default">=</Button>
+          <Button onClick={handleClear} variant="destructive" className="col-span-4">C</Button>
+        </div>
       </div>
-      <div className="grid grid-cols-4 gap-2">
-        {[7, 8, 9, 4, 5, 6, 1, 2, 3, 0].map((num) => (
-          <Button key={num} onClick={() => handleNumberClick(num)} variant="outline">
-            {num}
-          </Button>
-        ))}
-        <Button onClick={() => handleOperationClick('+')} variant="secondary">+</Button>
-        <Button onClick={() => handleOperationClick('-')} variant="secondary">-</Button>
-        <Button onClick={() => handleOperationClick('*')} variant="secondary">*</Button>
-        <Button onClick={handleEquals} variant="default">=</Button>
-        <Button onClick={handleClear} variant="destructive" className="col-span-4">C</Button>
-      </div>
-    </div>
   )
 }
