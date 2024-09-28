@@ -3,14 +3,10 @@
 import {useState} from 'react'
 import {Button} from "@/components/ui/button"
 import * as Domain from "../Calculator"
-import {Calculate, CalculatorDigit, CalculatorOperation, CalculatorState, createCalculate} from "../Calculator"
+import {Calculate, CalculatorAction, CalculatorDigit, CalculatorOperation, createCalculate} from "../Calculator"
 import {Either as E, Option as O} from 'effect'
 
 export default function Calculator() {
-  const [currentOperation, setCurrentOperation] = useState(null)
-  const [previousValue, setPreviousValue] = useState(null)
-
-
   const services: Domain.CalculatorServices = {
     updateDisplayFromDigit: function (digit: Domain.CalculatorDigit, display: Domain.CalculatorDisplay): Domain.CalculatorDisplay {
       let newDigit = "";
@@ -131,36 +127,26 @@ export default function Calculator() {
     console.log("after state, state"+JSON.stringify(state));
   }
 
-  const handleOperationClick = (operation: any) => {
-    setCurrentOperation(operation)
+  const handleOperationClick = (operation: CalculatorOperation) => {
+    setState(calculate({
+      tag: "CalculatorOperation",
+      value: operation,
+    }, state));
     //setPreviousValue(parseFloat(display))
   }
 
   const handleEquals = () => {
-    if (currentOperation && previousValue !== null) {
-      const currentValue = parseFloat(state.display)
-      let result
-      switch (currentOperation) {
-        case '+':
-          result = previousValue + currentValue
-          break
-        case '-':
-          result = previousValue - currentValue
-          break
-        case '*':
-          result = previousValue * currentValue
-          break
-        default:
-          return
-      }
-      setCurrentOperation(null)
-      setPreviousValue(null)
-    }
+    setState(calculate({
+      tag: "CalculatorAction",
+      value: CalculatorAction.Equals,
+    }, state))
   }
 
   const handleClear = () => {
-    setCurrentOperation(null)
-    setPreviousValue(null)
+    setState(calculate({
+      tag: "CalculatorAction",
+      value: CalculatorAction.Clear,
+    }, state))
   }
 
   return (
@@ -174,9 +160,10 @@ export default function Calculator() {
                 {num}
               </Button>
           ))}
-          <Button onClick={() => handleOperationClick('+')} variant="secondary">+</Button>
-          <Button onClick={() => handleOperationClick('-')} variant="secondary">-</Button>
-          <Button onClick={() => handleOperationClick('*')} variant="secondary">*</Button>
+          <Button onClick={() => handleOperationClick(CalculatorOperation.Add)} variant="secondary">+</Button>
+          <Button onClick={() => handleOperationClick(CalculatorOperation.Subtract)} variant="secondary">-</Button>
+          <Button onClick={() => handleOperationClick(CalculatorOperation.Multiply)} variant="secondary">*</Button>
+          <Button onClick={() => handleOperationClick(CalculatorOperation.Divide)} variant="secondary">/</Button>
           <Button onClick={handleEquals} variant="default">=</Button>
           <Button onClick={handleClear} variant="destructive" className="col-span-4">C</Button>
         </div>

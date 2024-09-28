@@ -34,7 +34,7 @@ export enum CalculatorOperation {
     Divide,
 }
 
-enum CalculatorAction {
+export enum CalculatorAction {
     Equals,
     Clear
 }
