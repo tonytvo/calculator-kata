@@ -10,6 +10,7 @@ type CalculatorOutput = unknown
 export type CalculatorState = {
     display: CalculatorDisplay,
     pendingOperation: O.Option<[CalculatorOperation, CalculatorNumber]>
+    allowAppend: boolean,
 }
 export type CalculatorDisplay = string
 
@@ -74,7 +75,7 @@ function updateDisplayFromDigit(services: CalculatorServices, value: CalculatorD
 
 export function updateDisplayFromPendingOp(services: CalculatorServices, state: CalculatorState): CalculatorState {
     function displayToState(newDisplay: string) {
-        return Object.assign({}, state, {display: newDisplay, pendingOp: O.none()});
+        return Object.assign({}, state, {display: newDisplay, pendingOperation: O.none()});
     }
 
     function doOperation([op, pendingNumber, currentNumber]: [CalculatorOperation, CalculatorNumber, number]): MathOperationResult {
@@ -84,20 +85,24 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
     function combineArgs([a, b]: [CalculatorOperation, number], c: CalculatorNumber): [CalculatorOperation, number, CalculatorNumber] {
         return [a, b, c];
     }
+    console.log("state:");
+    console.log(state);
 
+    const currentStateDisplay = services.getDisplayNumber(state.display);
+    console.log("currentStateDisplay:", currentStateDisplay);
     let calculatorCombinedInputs =
         O.zipWith(state.pendingOperation,
-            services.getDisplayNumber(state.display),
+            currentStateDisplay,
             combineArgs);
 
-    return pipe(calculatorCombinedInputs,
+    console.log(`calculatorCombinedInputs = ${JSON.stringify(calculatorCombinedInputs)}`, );
+    function foo(a: any): any {
+        console.log(a);
+        return a;
+    }
+    const newCalculatorState = pipe(calculatorCombinedInputs,
+        foo,
         O.map(doOperation),
-        // O.map(E.match(
-        //     {
-        //         onLeft: services.setDisplayNumber,
-        //         onRight: services.setDisplayError
-        //     })
-        // ),
         O.map(E.match(
             {
                 onLeft: services.setDisplayNumber,
@@ -106,6 +111,7 @@ export function updateDisplayFromPendingOp(services: CalculatorServices, state: 
         ),
         O.map(displayToState),
         O.getOrElse(() => state));
+    return newCalculatorState;
 }
 
 function updateWithAction(services: CalculatorServices, value: CalculatorAction, state: CalculatorState): CalculatorState {
@@ -122,8 +128,9 @@ function updateWithAction(services: CalculatorServices, value: CalculatorAction,
 
 function addPendingMathOp(services: CalculatorServices, op: CalculatorOperation, state: CalculatorState) {
     function updatePendingOp(value: CalculatorNumber): CalculatorState {
-        const pendingOp: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, value])
-        return Object.assign({}, state, {pendingOp});
+        const pendingOperation: O.Option<[CalculatorOperation, CalculatorNumber]> = O.some([op, value])
+        const newState: CalculatorState = {display: state.display, pendingOperation: pendingOperation, allowAppend: false};
+        return newState;
     }
 
     return pipe(state.display,

@@ -49,7 +49,10 @@ export default function Calculator() {
       }
 
       //todo deal with display length special cases
-      return display + newDigit;
+      if(state.allowAppend) {
+        return display + newDigit;
+      }
+      return newDigit;
     },
     doMathOperation: function (operation: Domain.CalculatorOperation, a: Domain.CalculatorNumber, b: Domain.CalculatorNumber): Domain.MathOperationResult {
       switch (operation) {
@@ -84,7 +87,7 @@ export default function Calculator() {
     },
 
     initState: function (): Domain.CalculatorState {
-      return {display: "", pendingOperation: O.none()};
+      return {display: "", pendingOperation: O.none(), allowAppend: true};
     }
   }
   const calculate: Calculate = createCalculate(services);
