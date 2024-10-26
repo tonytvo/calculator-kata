@@ -6,6 +6,8 @@ import * as Domain from "../Calculator"
 import {Calculate, CalculatorAction, CalculatorDigit, CalculatorOperation, createCalculate} from "../Calculator"
 import {Either as E, Option as O} from 'effect'
 
+const MAX_DISPLAY_LENGTH = 10;
+
 function calculatorDigitToString(digit: CalculatorDigit) {
   let newDigit = "";
   switch (digit) {
@@ -41,7 +43,6 @@ function calculatorDigitToString(digit: CalculatorDigit) {
       break;
     case CalculatorDigit.DecimalSeparator:
       newDigit = ".";
-      // todo deal with special cases
       break;
   }
   return newDigit;
@@ -55,7 +56,19 @@ export default function Calculator() {
       if (display === '0' && newDigit === '0') {
         newDigit = '';
       }
-      //todo deal with display length special cases
+
+      if (display === '' && newDigit === '.') {
+        newDigit = '0.';
+      }
+
+      if (display.includes('.') && newDigit === '.') {
+        newDigit = '';
+      }
+
+      if (display.length + newDigit.length > MAX_DISPLAY_LENGTH) {
+        newDigit = '';
+      }
+
       if(state.allowAppend) {
         return display + newDigit;
       }
