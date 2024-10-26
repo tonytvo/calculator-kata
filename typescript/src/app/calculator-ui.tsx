@@ -11,7 +11,6 @@ function calculatorDigitToString(digit: CalculatorDigit) {
   switch (digit) {
     case CalculatorDigit.Zero:
       newDigit = "0";
-      // todo deal with special cases
       break;
     case CalculatorDigit.One:
       newDigit = "1";
@@ -51,8 +50,11 @@ function calculatorDigitToString(digit: CalculatorDigit) {
 export default function Calculator() {
   const services: Domain.CalculatorServices = {
     updateDisplayFromDigit: function (digit: Domain.CalculatorDigit, display: Domain.CalculatorDisplay): Domain.CalculatorDisplay {
-      let newDigit = calculatorDigitToString(digit);
 
+      let newDigit = calculatorDigitToString(digit);
+      if (display === '0' && newDigit === '0') {
+        newDigit = '';
+      }
       //todo deal with display length special cases
       if(state.allowAppend) {
         return display + newDigit;
