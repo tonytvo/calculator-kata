@@ -3,7 +3,7 @@
 import {useState} from 'react'
 import {Button} from "@/components/ui/button"
 import * as Domain from "../Calculator"
-import {Calculate, CalculatorAction, CalculatorDigit, CalculatorOperation, createCalculate} from "../Calculator"
+import {Calculate, CalculatorAction, CalculatorDigit, CalculatorOperation, createCalculate} from "@/Calculator"
 import {Either as E, Option as O} from 'effect'
 
 const MAX_DISPLAY_LENGTH = 10;
