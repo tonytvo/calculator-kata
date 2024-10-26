@@ -6,47 +6,52 @@ import * as Domain from "../Calculator"
 import {Calculate, CalculatorAction, CalculatorDigit, CalculatorOperation, createCalculate} from "../Calculator"
 import {Either as E, Option as O} from 'effect'
 
+function calculatorDigitToString(digit: CalculatorDigit) {
+  let newDigit = "";
+  switch (digit) {
+    case CalculatorDigit.Zero:
+      newDigit = "0";
+      // todo deal with special cases
+      break;
+    case CalculatorDigit.One:
+      newDigit = "1";
+      break;
+    case CalculatorDigit.Two:
+      newDigit = "2";
+      break;
+    case CalculatorDigit.Three:
+      newDigit = "3";
+      break;
+    case CalculatorDigit.Four:
+      newDigit = "4";
+      break;
+    case CalculatorDigit.Five:
+      newDigit = "5";
+      break;
+    case CalculatorDigit.Six:
+      newDigit = "6";
+      break;
+    case CalculatorDigit.Seven:
+      newDigit = "7";
+      break;
+    case CalculatorDigit.Eight:
+      newDigit = "8";
+      break;
+    case CalculatorDigit.Nine:
+      newDigit = "9";
+      break;
+    case CalculatorDigit.DecimalSeparator:
+      newDigit = ".";
+      // todo deal with special cases
+      break;
+  }
+  return newDigit;
+}
+
 export default function Calculator() {
   const services: Domain.CalculatorServices = {
     updateDisplayFromDigit: function (digit: Domain.CalculatorDigit, display: Domain.CalculatorDisplay): Domain.CalculatorDisplay {
-      let newDigit = "";
-      switch (digit) {
-        case CalculatorDigit.Zero:
-          newDigit = "0";
-          // todo deal with special cases
-          break;
-        case CalculatorDigit.One:
-          newDigit = "1";
-          break;
-        case CalculatorDigit.Two:
-          newDigit = "2";
-          break;
-        case CalculatorDigit.Three:
-          newDigit = "3";
-          break;
-        case CalculatorDigit.Four:
-          newDigit = "4";
-          break;
-        case CalculatorDigit.Five:
-          newDigit = "5";
-          break;
-        case CalculatorDigit.Six:
-          newDigit = "6";
-          break;
-        case CalculatorDigit.Seven:
-          newDigit = "7";
-          break;
-        case CalculatorDigit.Eight:
-          newDigit = "8";
-          break;
-        case CalculatorDigit.Nine:
-          newDigit = "9";
-          break;
-        case CalculatorDigit.DecimalSeparator:
-          newDigit = ".";
-          // todo deal with special cases
-          break;
-      }
+      let newDigit = calculatorDigitToString(digit);
 
       //todo deal with display length special cases
       if(state.allowAppend) {
@@ -93,41 +98,11 @@ export default function Calculator() {
   const calculate: Calculate = createCalculate(services);
   const [state, setState] = useState(services.initState);
 
-  const handleNumberClick = (number: number) => {
-    const calculatorInputConvertor = (number: number) => {
-      switch (number) {
-        case 0:
-          return CalculatorDigit.Zero;
-        case 1:
-          return CalculatorDigit.One;
-        case 2:
-          return CalculatorDigit.Two;
-        case 3:
-          return CalculatorDigit.Three;
-        case 4:
-          return CalculatorDigit.Four;
-        case 5:
-          return CalculatorDigit.Five;
-        case 6:
-          return CalculatorDigit.Six;
-        case 7:
-          return CalculatorDigit.Seven;
-        case 8:
-          return CalculatorDigit.Eight;
-        case 9:
-          return CalculatorDigit.Nine;
-        default:
-          //todo consider using _check
-          return CalculatorDigit.Zero;
-      }
-    };
-
-    console.log("before state, state"+JSON.stringify(state));
+  const handleNumberClick = (number: CalculatorDigit) => {
     setState(calculate({
       tag: "CalculatorDigit",
-      value: calculatorInputConvertor(number)
+      value: number
     }, state));
-    console.log("after state, state"+JSON.stringify(state));
   }
 
   const handleOperationClick = (operation: CalculatorOperation) => {
@@ -158,9 +133,12 @@ export default function Calculator() {
           {state.display}
         </div>
         <div className="grid grid-cols-4 gap-2">
-          {[7, 8, 9, 4, 5, 6, 1, 2, 3, 0].map((num) => (
+          {[CalculatorDigit.Seven, CalculatorDigit.Eight, CalculatorDigit.Nine,
+            CalculatorDigit.Four, CalculatorDigit.Five, CalculatorDigit.Six,
+            CalculatorDigit.One, CalculatorDigit.Two, CalculatorDigit.Three,
+            CalculatorDigit.Zero, CalculatorDigit.DecimalSeparator].map((num) => (
               <Button key={num} onClick={() => handleNumberClick(num)} variant="outline">
-                {num}
+                {calculatorDigitToString(num)}
               </Button>
           ))}
           <Button onClick={() => handleOperationClick(CalculatorOperation.Add)} variant="secondary">+</Button>
