@@ -1,7 +1,14 @@
 import { describe, test } from "@jest/globals";
 
-import {CalculatorOperation, CalculatorNumber, MathOperationError, MathOperationResult} from '../src/Calculator';
+import {
+  CalculatorOperation,
+  CalculatorNumber,
+  MathOperationError,
+  MathOperationResult,
+  CalculatorDigit
+} from '../src/Calculator';
 import {Option as O} from "effect";
+import {undefined} from "effect/Match";
 
 
 type PendingOp = O.Option<[CalculatorOperation, CalculatorNumber]>;
@@ -45,6 +52,14 @@ type CalculatorState =
     | {state: 'computed', value: ComputedStateData}
     | {state: 'error', value: ErrorStateData};
 
+type Calculate = (calculatorInput: CalculatorInput, calculatorState: CalculatorState) => CalculatorState;
+
+function createCalculate(calculatorService: CalculatorServices): Calculate {
+  return (input, calculatorState) => {
+    return calculatorState;
+  }
+}
+
 type AccumulateNonZeroDigit = (nonZeroDigit: CalculatorNonZeroDigit, accumulator: DigitAccumulator) => DigitAccumulator;
 
 type AccumulateZero = (accumulator: DigitAccumulator) => DigitAccumulator;
@@ -71,10 +86,35 @@ type CalculatorServices = {
 
 describe("Calculator tests", () => {
 
-  test("", () => {
-    //we are in empty state
-    //we get zero calculatorInput
-    //we stay in the zero state
+  test("in zero state, pressing zero does nothing", () => {
+    const services: CalculatorServices = {
+      accumulateNonZeroDigit(nonZeroDigit: CalculatorNonZeroDigit, accumulator: DigitAccumulator): DigitAccumulator {
+        return undefined;
+      },
+      accumulateSeparator(accumulator: DigitAccumulator): DigitAccumulator {
+        return undefined;
+      },
+      accumulateZero(accumulator: DigitAccumulator): DigitAccumulator {
+        return undefined;
+      },
+      doMathOperation(mathOps: CalculatorMathOps, number1: CalculatorNumber, number2: CalculatorNumber): MathOperationResult {
+        return undefined;
+      },
+      getDisplayFromState(accumulatorStateData: AccumulatorStateData): string {
+        return "";
+      },
+      getNumberFromAccumulator(accumulatorStateData: AccumulatorStateData): CalculatorNumber {
+        return undefined;
+      },
+      getPendingOpsFromState(accumulatorStateData: AccumulatorStateData): string {
+        return "";
+      }
+    };
+    const calculate = createCalculate(services);
+
+    const newState = calculate({type: "zero"}, {state: "zero", value: O.none()});
+
+    expect(newState).toEqual({state: "zero", value: O.none()});
   })
 
   test("", () => {
