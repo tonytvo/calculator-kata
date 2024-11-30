@@ -1,10 +1,9 @@
 import {Either as E, Option as O, pipe} from "effect";
 
-// we are currently at https://fsharpforfunandprofit.com/posts/calculator-complete-v1/
-
 type CalculatorInput = { tag: "CalculatorDigit", value: CalculatorDigit } |
     { tag: "CalculatorOperation", value: CalculatorOperation } |
     { tag: "CalculatorAction", value: CalculatorAction };
+
 type CalculatorOutput = unknown
 
 export type CalculatorState = {

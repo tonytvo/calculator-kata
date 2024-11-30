@@ -1,5 +1,11 @@
 import { describe, test } from "@jest/globals";
 
+import {CalculatorOperation, CalculatorNumber, MathOperationError} from '../src/Calculator';
+import {Option as O} from "effect";
+
+
+type PendingOp = O.Option<[CalculatorOperation, CalculatorNumber]>;
+
 interface CalculatorNonZeroDigit {
   readonly value: number
 }
@@ -12,7 +18,8 @@ interface CalculatorAction {
   readonly action: 'clear' | 'equal'
 }
 
-type CalculatorInput = { type: 'zero' }
+type CalculatorInput =
+    { type: 'zero' }
     | { type: 'digit', value: CalculatorNonZeroDigit }
     | { type: 'decimalSeparator'}
     | { type: 'clear'}
@@ -21,8 +28,22 @@ type CalculatorInput = { type: 'zero' }
 
 type CalculatorDisplay = string;
 
-type CalculatorState = { state: 'empty' }
-    | {state: 'accumulateDigit', value: CalculatorDisplay};
+type ZeroStateData = PendingOp;
+
+type DigitAccumulator = string;
+
+type AccumulatorStateData = { digit: DigitAccumulator, pendingOp: PendingOp };
+
+type ComputedStateData = { displayNumber: CalculatorNumber, pendingOp: PendingOp };
+
+type ErrorStateData = MathOperationError;
+
+type CalculatorState =
+    { state: 'zero', value: ZeroStateData }
+    | {state: 'accumulator', value: AccumulatorStateData }
+    | {state: 'accumulatorWithDecimal', value: AccumulatorStateData}
+    | {state: 'computed', value: ComputedStateData}
+    | {state: 'error', value: ErrorStateData};
 
 describe("Calculator tests", () => {
 
