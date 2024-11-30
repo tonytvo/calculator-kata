@@ -1,6 +1,6 @@
 import { describe, test } from "@jest/globals";
 
-import {CalculatorOperation, CalculatorNumber, MathOperationError} from '../src/Calculator';
+import {CalculatorOperation, CalculatorNumber, MathOperationError, MathOperationResult} from '../src/Calculator';
 import {Option as O} from "effect";
 
 
@@ -44,6 +44,30 @@ type CalculatorState =
     | {state: 'accumulatorWithDecimal', value: AccumulatorStateData}
     | {state: 'computed', value: ComputedStateData}
     | {state: 'error', value: ErrorStateData};
+
+type AccumulateNonZeroDigit = (nonZeroDigit: CalculatorNonZeroDigit, accumulator: DigitAccumulator) => DigitAccumulator;
+
+type AccumulateZero = (accumulator: DigitAccumulator) => DigitAccumulator;
+
+type AccumulateSeparator = (accumulator: DigitAccumulator) => DigitAccumulator;
+
+type DoMathOperation = (mathOps: CalculatorMathOps, number1: CalculatorNumber, number2: CalculatorNumber) => MathOperationResult;
+
+type GetNumberFromAccumulator = (accumulatorStateData: AccumulatorStateData) => CalculatorNumber;
+
+type GetDisplayFromState = (accumulatorStateData: AccumulatorStateData) => string;
+
+type GetPendingOpsFromState = (accumulatorStateData: AccumulatorStateData) => string;
+
+type CalculatorServices = {
+  accumulateNonZeroDigit: AccumulateNonZeroDigit,
+  accumulateZero: AccumulateZero,
+  accumulateSeparator: AccumulateSeparator,
+  doMathOperation: DoMathOperation,
+  getNumberFromAccumulator: GetNumberFromAccumulator,
+  getDisplayFromState: GetDisplayFromState,
+  getPendingOpsFromState: GetPendingOpsFromState
+};
 
 describe("Calculator tests", () => {
 
