@@ -59,6 +59,9 @@ function createCalculate(calculatorService: CalculatorServices): Calculate {
         if (input.type === 'digit') {
           return {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
         }
+        if (input.type === 'decimalSeparator') {
+          return { state: "accumulatorWithDecimal", value: { digit: "0.", pendingOp: O.none() } };
+        }
         break;
       case 'accumulator':
         if (input.type === 'digit') {
@@ -156,9 +159,29 @@ describe("Calculator tests", () => {
     expect(newState).toEqual({state: "accumulator", value: {digit: "12", pendingOp: O.none()}});
   })
 
-  test("", () => {
-    //we are in empty state
-    //we get non zero calculatorInput
-    //we transition to accumulateDigit state
-  })
+  test("in zero state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
+    const services = createServices();
+    const calculate = createCalculate(services);
+
+    // Initial state: Zero state with no pending operations
+    const initialState: CalculatorState = { state: "zero", value: O.none() };
+
+    // Input: Press decimal separator
+    const input: CalculatorInput = { type: "decimalSeparator" };
+
+    // Expected state: accumulatorWithDecimal state with "0." as the digit
+    const expectedState: CalculatorState = {
+      state: "accumulatorWithDecimal",
+      value: {
+        digit: "0.",
+        pendingOp: O.none(),
+      },
+    };
+
+    const newState = calculate(input, initialState);
+
+    // Assertion
+    expect(newState).toEqual(expectedState);
+  });
+
 });
