@@ -84,32 +84,37 @@ type CalculatorServices = {
   getPendingOpsFromState: GetPendingOpsFromState
 };
 
+function createServices() {
+  const services: CalculatorServices = {
+    accumulateNonZeroDigit(nonZeroDigit: CalculatorNonZeroDigit, accumulator: DigitAccumulator): DigitAccumulator {
+      return accumulator;
+    },
+    accumulateSeparator(accumulator: DigitAccumulator): DigitAccumulator {
+      return accumulator;
+    },
+    accumulateZero(accumulator: DigitAccumulator): DigitAccumulator {
+      return accumulator;
+    },
+    doMathOperation(mathOps: CalculatorMathOps, number1: CalculatorNumber, number2: CalculatorNumber): MathOperationResult {
+      return E.left(0);
+    },
+    getDisplayFromState(accumulatorStateData: AccumulatorStateData): string {
+      return "";
+    },
+    getNumberFromAccumulator(accumulatorStateData: AccumulatorStateData): CalculatorNumber {
+      return 0;
+    },
+    getPendingOpsFromState(accumulatorStateData: AccumulatorStateData): string {
+      return "";
+    }
+  };
+  return services;
+}
+
 describe("Calculator tests", () => {
 
   test("in zero state, pressing zero does nothing", () => {
-    const services: CalculatorServices = {
-      accumulateNonZeroDigit(nonZeroDigit: CalculatorNonZeroDigit, accumulator: DigitAccumulator): DigitAccumulator {
-        return accumulator;
-      },
-      accumulateSeparator(accumulator: DigitAccumulator): DigitAccumulator {
-        return accumulator;
-      },
-      accumulateZero(accumulator: DigitAccumulator): DigitAccumulator {
-        return accumulator;
-      },
-      doMathOperation(mathOps: CalculatorMathOps, number1: CalculatorNumber, number2: CalculatorNumber): MathOperationResult {
-        return E.left(0);
-      },
-      getDisplayFromState(accumulatorStateData: AccumulatorStateData): string {
-        return "";
-      },
-      getNumberFromAccumulator(accumulatorStateData: AccumulatorStateData): CalculatorNumber {
-        return 0;
-      },
-      getPendingOpsFromState(accumulatorStateData: AccumulatorStateData): string {
-        return "";
-      }
-    };
+    const services = createServices();
     const calculate = createCalculate(services);
 
     const newState = calculate({type: "zero"}, {state: "zero", value: O.none()});
