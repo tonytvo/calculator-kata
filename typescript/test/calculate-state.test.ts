@@ -1,20 +1,18 @@
-import { describe, test } from "@jest/globals";
+import {describe, test} from "@jest/globals";
 
-import {
-  CalculatorOperation,
-  CalculatorNumber,
-  MathOperationError,
-  MathOperationResult,
-  CalculatorDigit
-} from '../src/Calculator';
-import {Option as O, Either as E} from "effect";
-import {undefined} from "effect/Match";
+import {CalculatorNumber, CalculatorOperation, MathOperationError, MathOperationResult} from '../src/Calculator';
+import {Either as E, Option as O} from "effect";
 
 
 type PendingOp = O.Option<[CalculatorOperation, CalculatorNumber]>;
 
-interface CalculatorNonZeroDigit {
-  readonly value: number
+class CalculatorNonZeroDigit {
+
+  constructor(readonly value: number) {
+  }
+  toString(): string {
+    return this.value.toString();
+  }
 }
 
 interface CalculatorMathOps {
@@ -56,6 +54,9 @@ type Calculate = (calculatorInput: CalculatorInput, calculatorState: CalculatorS
 
 function createCalculate(calculatorService: CalculatorServices): Calculate {
   return (input, calculatorState) => {
+    if (input.type === 'digit') {
+      return {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
+    }
     return calculatorState;
   }
 }
@@ -120,6 +121,18 @@ describe("Calculator tests", () => {
     const newState = calculate({type: "zero"}, {state: "zero", value: O.none()});
 
     expect(newState).toEqual({state: "zero", value: O.none()});
+  })
+
+  test("in zero state, pressing digit accumulate state", () => {
+    const services = createServices();
+    const calculate = createCalculate(services);
+
+    const newState = calculate(
+        {type: "digit", value: new CalculatorNonZeroDigit(1)},
+        {state: "zero", value: O.none()}
+    );
+
+    expect(newState).toEqual({state: "accumulator", value: {digit: "1", pendingOp: O.none()}});
   })
 
   test("", () => {
