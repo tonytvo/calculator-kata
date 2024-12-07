@@ -7,7 +7,7 @@ import {
   MathOperationResult,
   CalculatorDigit
 } from '../src/Calculator';
-import {Option as O} from "effect";
+import {Option as O, Either as E} from "effect";
 import {undefined} from "effect/Match";
 
 
@@ -89,22 +89,22 @@ describe("Calculator tests", () => {
   test("in zero state, pressing zero does nothing", () => {
     const services: CalculatorServices = {
       accumulateNonZeroDigit(nonZeroDigit: CalculatorNonZeroDigit, accumulator: DigitAccumulator): DigitAccumulator {
-        return undefined;
+        return accumulator;
       },
       accumulateSeparator(accumulator: DigitAccumulator): DigitAccumulator {
-        return undefined;
+        return accumulator;
       },
       accumulateZero(accumulator: DigitAccumulator): DigitAccumulator {
-        return undefined;
+        return accumulator;
       },
       doMathOperation(mathOps: CalculatorMathOps, number1: CalculatorNumber, number2: CalculatorNumber): MathOperationResult {
-        return undefined;
+        return E.left(0);
       },
       getDisplayFromState(accumulatorStateData: AccumulatorStateData): string {
         return "";
       },
       getNumberFromAccumulator(accumulatorStateData: AccumulatorStateData): CalculatorNumber {
-        return undefined;
+        return 0;
       },
       getPendingOpsFromState(accumulatorStateData: AccumulatorStateData): string {
         return "";
