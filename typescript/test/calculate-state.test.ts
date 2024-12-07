@@ -54,8 +54,17 @@ type Calculate = (calculatorInput: CalculatorInput, calculatorState: CalculatorS
 
 function createCalculate(calculatorService: CalculatorServices): Calculate {
   return (input, calculatorState) => {
-    if (input.type === 'digit') {
-      return {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
+    switch (calculatorState.state) {
+      case 'zero':
+        if (input.type === 'digit') {
+          return {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
+        }
+        break;
+      case 'accumulator':
+        if (input.type === 'digit') {
+          return {state: "accumulator", value: {digit: calculatorState.value.digit + input.value.toString(), pendingOp: O.none()}};
+        }
+        break;
     }
     return calculatorState;
   }
@@ -133,6 +142,18 @@ describe("Calculator tests", () => {
     );
 
     expect(newState).toEqual({state: "accumulator", value: {digit: "1", pendingOp: O.none()}});
+  })
+
+  test("in zero state, pressing digit accumulate state", () => {
+    const services = createServices();
+    const calculate = createCalculate(services);
+
+    const newState = calculate(
+        {type: "digit", value: new CalculatorNonZeroDigit(2)},
+        {state: "accumulator", value: {digit: "1", pendingOp: O.none()}}
+    );
+
+    expect(newState).toEqual({state: "accumulator", value: {digit: "12", pendingOp: O.none()}});
   })
 
   test("", () => {
