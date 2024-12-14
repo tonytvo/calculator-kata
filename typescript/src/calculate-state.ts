@@ -1,4 +1,10 @@
-import {CalculatorNumber, CalculatorOperation, MathOperationError, MathOperationResult} from "@/Calculator";
+import {
+    CalculatorDigit,
+    CalculatorNumber,
+    CalculatorOperation,
+    MathOperationError,
+    MathOperationResult
+} from "@/Calculator";
 import {Either as E, Option as O, pipe} from "effect";
 
 export type CalculatorState =
@@ -16,7 +22,7 @@ export type CalculatorInput =
     | { type: 'equal' }
     | { type: 'op', value: CalculatorMathOps };
 
-type PendingOp = O.Option<[CalculatorOperation, CalculatorNumber]>;
+type PendingOp = O.Option<[CalculatorMathOps, CalculatorNumber]>;
 
 export class CalculatorNonZeroDigit {
 
@@ -63,7 +69,7 @@ export type CalculatorServices = {
 };
 
 export function createCalculate(calculatorService: CalculatorServices): Calculate {
-    return (input, calculatorState) => {
+    return (input: CalculatorInput, calculatorState: CalculatorState): CalculatorState => {
         switch (calculatorState.state) {
             case 'zero':
                 if (input.type === 'digit') {
@@ -71,6 +77,18 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                 }
                 if (input.type === 'decimalSeparator') {
                     return {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}};
+                }
+                if (input.type === 'clear') {
+                    return calculatorState;
+                }
+                if (input.type === 'equal') {
+                    return {state: "computed", value: {displayNumber: 0, pendingOp: O.none()}};
+                }
+                if (input.type === 'op') {
+                    return {
+                        state: "computed",
+                        value: {displayNumber: 0, pendingOp: O.some([{op: input.value.op}, 0])}
+                    };
                 }
                 break;
             case 'accumulator':

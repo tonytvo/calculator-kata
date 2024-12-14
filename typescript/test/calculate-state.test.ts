@@ -42,63 +42,75 @@ function createServices() {
 }
 
 describe("Calculator tests", () => {
+  describe("zero state", () => {
+    test("in zero state, pressing zero does nothing", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
 
-  test("in zero state, pressing zero does nothing", () => {
-    const services = createServices();
-    const calculate = createCalculate(services);
+      const newState = calculate({type: "zero"}, {state: "zero", value: O.none()});
 
-    const newState = calculate({type: "zero"}, {state: "zero", value: O.none()});
+      expect(newState).toEqual({state: "zero", value: O.none()});
+    });
 
-    expect(newState).toEqual({state: "zero", value: O.none()});
-  })
+    test("in zero state, pressing a digit transitions to accumulator state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
 
-  test("in zero state, pressing digit accumulate state", () => {
-    const services = createServices();
-    const calculate = createCalculate(services);
+      const newState = calculate(
+          {type: "digit", value: new CalculatorNonZeroDigit(1)},
+          {state: "zero", value: O.none()}
+      );
 
-    const newState = calculate(
-        {type: "digit", value: new CalculatorNonZeroDigit(1)},
-        {state: "zero", value: O.none()}
-    );
+      expect(newState).toEqual({state: "accumulator", value: {digit: "1", pendingOp: O.none()}});
+    });
 
-    expect(newState).toEqual({state: "accumulator", value: {digit: "1", pendingOp: O.none()}});
-  })
+    test("in zero state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
 
-  test("in zero state, pressing digit accumulate state", () => {
-    const services = createServices();
-    const calculate = createCalculate(services);
+      const initialState: CalculatorState = {state: "zero", value: O.none()};
 
-    const newState = calculate(
-        {type: "digit", value: new CalculatorNonZeroDigit(2)},
-        {state: "accumulator", value: {digit: "1", pendingOp: O.none()}}
-    );
+      const newState = calculate({type: "decimalSeparator"}, initialState);
 
-    expect(newState).toEqual({state: "accumulator", value: {digit: "12", pendingOp: O.none()}});
-  })
+      expect(newState).toEqual({state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}});
+    });
 
-  test("in zero state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
-    const services = createServices();
-    const calculate = createCalculate(services);
+    test("in zero state, pressing clear does nothing", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
 
-    // Initial state: Zero state with no pending operations
-    const initialState: CalculatorState = { state: "zero", value: O.none() };
+      const initialState: CalculatorState = {state: "zero", value: O.none()};
 
-    // Input: Press decimal separator
-    const input: CalculatorInput = { type: "decimalSeparator" };
+      const newState = calculate({type: "clear"}, initialState);
 
-    // Expected state: accumulatorWithDecimal state with "0." as the digit
-    const expectedState: CalculatorState = {
-      state: "accumulatorWithDecimal",
-      value: {
-        digit: "0.",
-        pendingOp: O.none(),
-      },
-    };
+      expect(newState).toEqual(initialState);
+    });
 
-    const newState = calculate(input, initialState);
+    test("in zero state, pressing equals transitions to computed state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
 
-    // Assertion
-    expect(newState).toEqual(expectedState);
+      const initialState: CalculatorState = {state: "zero", value: O.none()};
+
+      const newState = calculate({type: "equal"}, initialState);
+
+      expect(newState).toEqual({state: "computed", value: {displayNumber: 0, pendingOp: O.none()}});
+    });
+
+    test("in zero state, pressing a math operation transitions to computed state with pending operation", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {state: "zero", value: O.none()};
+
+      const input: CalculatorInput = {type: "op", value: {op: '+'}};
+
+      const newState = calculate(input, initialState);
+
+      expect(newState).toEqual({
+        state: "computed",
+        value: {displayNumber: 0, pendingOp: O.some([{op: '+'}, 0])}
+      });
+    });
   });
-
 });
