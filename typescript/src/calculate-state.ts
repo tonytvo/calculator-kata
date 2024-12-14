@@ -1,6 +1,21 @@
 import {CalculatorNumber, CalculatorOperation, MathOperationError, MathOperationResult} from "@/Calculator";
 import {Either as E, Option as O, pipe} from "effect";
 
+export type CalculatorState =
+    { state: 'zero', value: ZeroStateData }
+    | { state: 'accumulator', value: AccumulatorStateData }
+    | { state: 'accumulatorWithDecimal', value: AccumulatorStateData }
+    | { state: 'computed', value: ComputedStateData }
+    | { state: 'error', value: ErrorStateData };
+
+export type CalculatorInput =
+    { type: 'zero' }
+    | { type: 'digit', value: CalculatorNonZeroDigit }
+    | { type: 'decimalSeparator' }
+    | { type: 'clear' }
+    | { type: 'equal' }
+    | { type: 'op', value: CalculatorMathOps };
+
 type PendingOp = O.Option<[CalculatorOperation, CalculatorNumber]>;
 
 export class CalculatorNonZeroDigit {
@@ -21,25 +36,13 @@ interface CalculatorAction {
     readonly action: 'clear' | 'equal'
 }
 
-export type CalculatorInput =
-    { type: 'zero' }
-    | { type: 'digit', value: CalculatorNonZeroDigit }
-    | { type: 'decimalSeparator' }
-    | { type: 'clear' }
-    | { type: 'equal' }
-    | { type: 'op', value: CalculatorMathOps };
 type CalculatorDisplay = string;
 type ZeroStateData = PendingOp;
 export type DigitAccumulator = string;
 export type AccumulatorStateData = { digit: DigitAccumulator, pendingOp: PendingOp };
 type ComputedStateData = { displayNumber: CalculatorNumber, pendingOp: PendingOp };
 type ErrorStateData = MathOperationError;
-export type CalculatorState =
-    { state: 'zero', value: ZeroStateData }
-    | { state: 'accumulator', value: AccumulatorStateData }
-    | { state: 'accumulatorWithDecimal', value: AccumulatorStateData }
-    | { state: 'computed', value: ComputedStateData }
-    | { state: 'error', value: ErrorStateData };
+
 type Calculate = (calculatorInput: CalculatorInput, calculatorState: CalculatorState) => CalculatorState;
 
 type AccumulateNonZeroDigit = (nonZeroDigit: CalculatorNonZeroDigit, accumulator: DigitAccumulator) => DigitAccumulator;
