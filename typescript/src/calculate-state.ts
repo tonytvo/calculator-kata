@@ -97,6 +97,11 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                         state: "accumulator",
                         value: {digit: calculatorState.value.digit + input.value.toString(), pendingOp: O.none()}
                     };
+                } else if (input.type === 'zero') {
+                    return {
+                        state: "accumulator",
+                        value: {digit: calculatorState.value.digit + "0", pendingOp: O.none()}
+                    };
                 }
                 break;
         }
