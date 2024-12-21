@@ -123,7 +123,26 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                             };
                         }
                     }
+                } else if (input.type === 'op') {
+                    const number1 = calculatorService.getNumberFromAccumulator(calculatorState.value);
+                    const pendingOp = calculatorState.value.pendingOp;
+                    if (O.isSome(pendingOp)) {
+                        const [op, number2] = pendingOp.value;
+                        const result = calculatorService.doMathOperation(op, number2, number1);
+                        if (E.isLeft(result)) {
+                            return {
+                                state: "computed",
+                                value: {displayNumber: result.left, pendingOp: O.some([{op: input.value.op}, result.left])}
+                            };
+                        }
+                    } else {
+                        return {
+                            state: "accumulator",
+                            value: {digit: calculatorState.value.digit, pendingOp: O.some([{op: input.value.op}, number1])}
+                        };
+                    }
                 }
+
 
                 break;
         }

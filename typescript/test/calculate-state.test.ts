@@ -138,7 +138,7 @@ describe("Calculator tests", () => {
       });
     });
 
-    test.skip("in accumulator state, pressing a math operation computes the result and sets a new pending operation", () => {
+    test("in accumulator state, pressing a math operation computes the result and sets a new pending operation", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
