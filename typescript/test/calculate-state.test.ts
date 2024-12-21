@@ -1,6 +1,6 @@
 import {describe, test} from "@jest/globals";
 
-import {CalculatorNumber, MathOperationResult} from '../src/Calculator';
+import {CalculatorNumber, CalculatorOperation, MathOperationError, MathOperationResult} from '../src/Calculator';
 import {Either as E, Option as O} from "effect";
 import {
     AccumulatorStateData,
@@ -12,7 +12,6 @@ import {
     createCalculate,
     DigitAccumulator
 } from '../src/calculate-state';
-
 
 function createServices() {
   const services: CalculatorServices = {
@@ -26,13 +25,27 @@ function createServices() {
       return accumulator;
     },
     doMathOperation(mathOps: CalculatorMathOps, number1: CalculatorNumber, number2: CalculatorNumber): MathOperationResult {
+      switch (mathOps.op) {
+        case '+':
+          return E.left(number1 + number2);
+        case '-':
+          return E.left(number1 - number2);
+        case '*':
+          return E.left(number1 * number2);
+        case '/':
+          if (number2 === 0) {
+            return E.right(MathOperationError.DivideByZero);
+          }
+          return E.left(number1 / number2);
+      }
+
       return E.left(0);
     },
     getDisplayFromState(accumulatorStateData: AccumulatorStateData): string {
       return "";
     },
     getNumberFromAccumulator(accumulatorStateData: AccumulatorStateData): CalculatorNumber {
-      return 0;
+      return Number(accumulatorStateData.digit.toString());
     },
     getPendingOpsFromState(accumulatorStateData: AccumulatorStateData): string {
       return "";
@@ -108,7 +121,7 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "zero", value: O.none()});
     });
 
-    test.skip("in accumulator state, pressing equals computes the result and transitions to computed state", () => {
+    test("in accumulator state, pressing equals computes the result and transitions to computed state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
