@@ -108,6 +108,8 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                         state: "accumulatorWithDecimal",
                         value
                     };
+                } else if (input.type === 'clear') {
+                    return {state: "zero", value: O.none()};
                 }
                 break;
         }

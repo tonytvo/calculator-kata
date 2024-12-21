@@ -94,7 +94,7 @@ describe("Calculator tests", () => {
       });
     });
 
-    test.skip("in accumulator state, pressing clear transitions to zero state", () => {
+    test("in accumulator state, pressing clear transitions to zero state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
