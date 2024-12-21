@@ -102,6 +102,12 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                         state: "accumulator",
                         value: {digit: calculatorState.value.digit + "0", pendingOp: O.none()}
                     };
+                } else if (input.type === 'decimalSeparator') {
+                    const value: AccumulatorStateData = {digit: calculatorState.value.digit + ".", pendingOp: O.none()};
+                    return {
+                        state: "accumulatorWithDecimal",
+                        value
+                    };
                 }
                 break;
         }

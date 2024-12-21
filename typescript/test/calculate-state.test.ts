@@ -77,7 +77,7 @@ describe("Calculator tests", () => {
       });
     });
 
-    test.skip("in accumulator state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
+    test("in accumulator state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
