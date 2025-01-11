@@ -292,9 +292,25 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "zero", value: O.none()});
     });
 
-    test.skip("in accumulatorWithDecimal state, pressing equals computes the result and transitions to computed state", () => {
+    // todo - add test for pressing equals when doMathOperation returns an error
+
+    test("in accumulatorWithDecimal state, pressing equals computes the result and transitions to computed state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.5", pendingOp: O.some([{op: '+'}, 10])}
+      };
+
+      const newState = calculate({type: "equal"}, initialState);
+
+      expect(newState).toEqual({
+        state: "computed",
+        value: {displayNumber: 15.5, pendingOp: O.none()}
+      });
     });
-  });
+    });
 
   // computed state
 
