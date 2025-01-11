@@ -247,7 +247,7 @@ describe("Calculator tests", () => {
       });
     });
 
-    test.skip("in accumulatorWithDecimal state, pressing a digit appends it to the buffer", () => {
+    test("in accumulatorWithDecimal state, pressing a digit appends it to the buffer", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 

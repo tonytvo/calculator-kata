@@ -153,12 +153,28 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
 }, input: CalculatorInput, calculatorService: CalculatorServices) {
   let newState: CalculatorState = calculatorState;
 
-  if (input.type === 'zero') {
-    newState = {
-      state: "accumulatorWithDecimal",
-      value: { digit: calculatorState.value.digit + "0", pendingOp: O.none() }
-    };
-  }
+    switch (input.type) {
+        case 'zero':
+            newState = {
+                state: "accumulatorWithDecimal",
+                value: {digit: calculatorState.value.digit + "0", pendingOp: O.none()}
+            };
+            break;
+        case "digit":
+            newState = {
+                state: "accumulatorWithDecimal",
+                value: {digit: calculatorState.value.digit + input.value.toString(), pendingOp: O.none()}
+            };
+            break;
+        case "decimalSeparator":
+            break;
+        case "clear":
+            break;
+        case "equal":
+            break;
+        case "op":
+            break;
+    }
 
     return newState;
 }
