@@ -176,12 +176,14 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
             const pendingOp = calculatorState.value.pendingOp;
             if (O.isSome(pendingOp)) {
                 const [op, number2] = pendingOp.value;
-                const result = calculatorService.doMathOperation(op, number2, number1);
+                const result = calculatorService.doMathOperation(op, number1, number2);
                 if (E.isLeft(result)) {
                     newState = {
                         state: "computed",
                         value: {displayNumber: result.left, pendingOp: O.none()}
                     };
+                } else {
+                    newState = {state: "error", value: result.right};
                 }
             }
             break;

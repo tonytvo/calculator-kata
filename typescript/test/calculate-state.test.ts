@@ -293,6 +293,22 @@ describe("Calculator tests", () => {
     });
 
     // todo - add test for pressing equals when doMathOperation returns an error
+    test("in accumulatorWithDecimal state, pressing equals when pendingOp is divide by zero returns error state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.5", pendingOp: O.some([{op: '/'}, 0])}
+      };
+
+      const newState = calculate({type: "equal"}, initialState);
+
+      expect(newState).toEqual({
+        state: "error",
+        value: MathOperationError.DivideByZero
+      });
+    });
 
     test("in accumulatorWithDecimal state, pressing equals computes the result and transitions to computed state", () => {
       const services = createServices();
