@@ -264,7 +264,7 @@ describe("Calculator tests", () => {
       });
     });
 
-    test.skip("in accumulatorWithDecimal state, pressing decimal separator does nothing", () => {
+    test("in accumulatorWithDecimal state, pressing decimal separator does nothing", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
