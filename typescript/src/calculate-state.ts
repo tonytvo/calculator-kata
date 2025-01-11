@@ -97,24 +97,25 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
             case 'zero':
                 return calculateFromZeroState(calculatorState, input);
             case 'accumulator':
+                let newState: CalculatorState = calculatorState;
                 if (input.type === 'digit') {
-                    return {
+                    newState = {
                         state: "accumulator",
                         value: {digit: calculatorState.value.digit + input.value.toString(), pendingOp: O.none()}
                     };
                 } else if (input.type === 'zero') {
-                    return {
+                    newState = {
                         state: "accumulator",
                         value: {digit: calculatorState.value.digit + "0", pendingOp: O.none()}
                     };
                 } else if (input.type === 'decimalSeparator') {
                     const value: AccumulatorStateData = {digit: calculatorState.value.digit + ".", pendingOp: O.none()};
-                    return {
+                    newState = {
                         state: "accumulatorWithDecimal",
                         value
                     };
                 } else if (input.type === 'clear') {
-                    return {state: "zero", value: O.none()};
+                    newState = {state: "zero", value: O.none()};
                 }  else if (input.type === 'equal') {
                     const number1 = calculatorService.getNumberFromAccumulator(calculatorState.value);
                     const pendingOp = calculatorState.value.pendingOp;
@@ -122,7 +123,7 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                         const [op, number2] = pendingOp.value;
                         const result = calculatorService.doMathOperation(op, number2, number1);
                         if (E.isLeft(result)) {
-                            return {
+                            newState = {
                                 state: "computed",
                                 value: {displayNumber: result.left, pendingOp: O.none()}
                             };
@@ -135,21 +136,20 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                         const [op, number2] = pendingOp.value;
                         const result = calculatorService.doMathOperation(op, number2, number1);
                         if (E.isLeft(result)) {
-                            return {
+                            newState = {
                                 state: "computed",
                                 value: {displayNumber: result.left, pendingOp: O.some([{op: input.value.op}, result.left])}
                             };
                         }
                     } else {
-                        return {
+                        newState = {
                             state: "accumulator",
                             value: {digit: calculatorState.value.digit, pendingOp: O.some([{op: input.value.op}, number1])}
                         };
                     }
                 }
 
-
-                break;
+                return newState;
         }
         return calculatorState;
     }
