@@ -292,14 +292,13 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "zero", value: O.none()});
     });
 
-    // todo - add test for pressing equals when doMathOperation returns an error
     test("in accumulatorWithDecimal state, pressing equals when pendingOp is divide by zero returns error state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
       const initialState: CalculatorState = {
         state: "accumulatorWithDecimal",
-        value: {digit: "5.5", pendingOp: O.some([{op: '/'}, 0])}
+        value: {digit: "0", pendingOp: O.some([{op: '/'}, 5.5])}
       };
 
       const newState = calculate({type: "equal"}, initialState);
@@ -326,7 +325,46 @@ describe("Calculator tests", () => {
         value: {displayNumber: 15.5, pendingOp: O.none()}
       });
     });
+
+    test.skip("in accumulatorWithDecimal state, pressing a math operation computes the result and sets a new pending operation", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.5", pendingOp: O.some([{op: '+'}, 10])}
+      };
+
+      const newState = calculate({type: "op", value: {op: '-'}}, initialState);
+
+      expect(newState).toEqual({
+        state: "computed",
+        value: {displayNumber: 15.5, pendingOp: O.some([{op: '-'}, 15.5])}
+      });
+
+
     });
+
+    test.skip("in accumulatorWithDecimal state with no pendingOp, pressing a math operation sets a new pending operation", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.5", pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "op", value: {op: '-'}}, initialState);
+
+      expect(newState).toEqual({
+        state: "computed",
+        value: {displayNumber: 5.5, pendingOp: O.some([{op: '-'}, 5.5])}
+      });
+
+
+    });
+
+  });
 
   // computed state
 

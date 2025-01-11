@@ -172,11 +172,11 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
             newState = {state: "zero", value: O.none()};
             break;
         case "equal":
-            const number1 = calculatorService.getNumberFromAccumulator(calculatorState.value);
+            const rightOperand = calculatorService.getNumberFromAccumulator(calculatorState.value);
             const pendingOp = calculatorState.value.pendingOp;
             if (O.isSome(pendingOp)) {
-                const [op, number2] = pendingOp.value;
-                const result = calculatorService.doMathOperation(op, number1, number2);
+                const [op, leftOperand] = pendingOp.value;
+                const result = calculatorService.doMathOperation(op, leftOperand, rightOperand);
                 if (E.isLeft(result)) {
                     newState = {
                         state: "computed",
