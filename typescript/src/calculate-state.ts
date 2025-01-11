@@ -72,25 +72,26 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
     return (input: CalculatorInput, calculatorState: CalculatorState): CalculatorState => {
         switch (calculatorState.state) {
             case 'zero':
+                let result: CalculatorState = calculatorState;
                 if (input.type === 'digit') {
-                    return {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
+                    result = {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
                 }
                 if (input.type === 'decimalSeparator') {
-                    return {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}};
+                    result =  {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}};
                 }
                 if (input.type === 'clear') {
-                    return calculatorState;
+                    result = calculatorState;
                 }
                 if (input.type === 'equal') {
-                    return {state: "computed", value: {displayNumber: 0, pendingOp: O.none()}};
+                    result = {state: "computed", value: {displayNumber: 0, pendingOp: O.none()}};
                 }
                 if (input.type === 'op') {
-                    return {
+                    result = {
                         state: "computed",
                         value: {displayNumber: 0, pendingOp: O.some([{op: input.value.op}, 0])}
                     };
                 }
-                break;
+                return result;
             case 'accumulator':
                 if (input.type === 'digit') {
                     return {

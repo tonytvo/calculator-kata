@@ -3,14 +3,14 @@ import {describe, test} from "@jest/globals";
 import {CalculatorNumber, CalculatorOperation, MathOperationError, MathOperationResult} from '../src/Calculator';
 import {Either as E, Option as O} from "effect";
 import {
-    AccumulatorStateData,
-    CalculatorInput,
-    CalculatorMathOps,
-    CalculatorNonZeroDigit,
-    CalculatorServices,
-    CalculatorState,
-    createCalculate,
-    DigitAccumulator
+  AccumulatorStateData,
+  CalculatorInput,
+  CalculatorMathOps,
+  CalculatorNonZeroDigit,
+  CalculatorServices,
+  CalculatorState,
+  createCalculate,
+  DigitAccumulator
 } from '../src/calculate-state';
 
 function createServices() {
@@ -227,4 +227,77 @@ describe("Calculator tests", () => {
       });
     });
   });
+
+  // accumulatorWithDecimal state
+  describe.skip("accumulatorWithDecimal state", () => {
+    test("in accumulatorWithDecimal state, pressing zero appends zero to the digit buffer", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.", pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "zero"}, initialState);
+
+      expect(newState).toEqual({
+        state: "accumulator",
+        value: {digit: "5.0", pendingOp: O.none()}
+      });
+    });
+
+    test("in accumulatorWithDecimal state, pressing a digit appends it to the buffer", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.", pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "digit", value: new CalculatorNonZeroDigit(3)}, initialState);
+
+      expect(newState).toEqual({
+        state: "accumulator",
+        value: {digit: "5.3", pendingOp: O.none()}
+      });
+    });
+
+    test("in accumulatorWithDecimal state, pressing decimal separator does nothing", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.", pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "decimalSeparator"}, initialState);
+
+      expect(newState).toEqual(initialState);
+    });
+
+    test("in accumulatorWithDecimal state, pressing clear transitions to zero state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulatorWithDecimal",
+        value: {digit: "5.", pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "clear"}, initialState);
+
+      expect(newState).toEqual({state: "zero", value: O.none()});
+    });
+
+    test("in accumulatorWithDecimal state, pressing equals computes the result and transitions to computed state", () => {
+    });
+  });
+
+  // computed state
+
+  // error state
+
 });
