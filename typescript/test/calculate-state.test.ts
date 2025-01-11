@@ -366,6 +366,8 @@ describe("Calculator tests", () => {
 
   });
 
+  // todo - add tests for error cases when evaluate the equal input
+  // todo - add tests for minus and divide operations with operands in different order
   // computed state
 
   // error state
