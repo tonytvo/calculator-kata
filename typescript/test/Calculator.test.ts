@@ -8,7 +8,7 @@ import {
   CalculatorNumber,
   CalculatorOperation,
   CalculatorServices,
-  CalculatorState, MathOperationResult
+  CalculatorState, MathOperationError, MathOperationResult
 } from "../src/Calculator";
 import {Option} from "effect/Option";
 
@@ -19,12 +19,15 @@ describe("Calculator tests", () => {
 
   test("updateDisplayFromPendingOp, should return empty given display empty and no pending Op", () => {
     const services: CalculatorServices = {
+      setDisplayError(error: MathOperationError): CalculatorDisplay {
+        return "";
+      },
       doMathOperation(operation: CalculatorOperation, a: CalculatorNumber, b: CalculatorNumber): MathOperationResult {
         return E.right(0);
       }, getDisplayNumber(display: CalculatorDisplay): Option<CalculatorNumber> {
         return O.none();
       }, initState(): CalculatorState {
-        return {display: "", pendingOperation: O.none()};
+        return {allowAppend: false, display: "", pendingOperation: O.none()};
       }, setDisplayNumber(number: CalculatorNumber): CalculatorDisplay {
         return "";
       }, updateDisplayFromDigit(digit: CalculatorDigit, display: CalculatorDisplay): CalculatorDisplay {
@@ -33,7 +36,7 @@ describe("Calculator tests", () => {
     }
 
     let calculatorState = Calculator.updateDisplayFromPendingOp(services,
-        {display: "", pendingOperation: O.none()});
+        {allowAppend: false, display: "", pendingOperation: O.none()});
 
     expect(calculatorState.display).toBe("");
     expect(calculatorState.pendingOperation).toBe(O.none());
@@ -41,6 +44,9 @@ describe("Calculator tests", () => {
 
   test("updateDisplayFromPendingOp, should return addition", () => {
     const services: CalculatorServices = {
+      setDisplayError(error: MathOperationError): CalculatorDisplay {
+        return "";
+      },
       doMathOperation(operation: CalculatorOperation, a: CalculatorNumber, b: CalculatorNumber): MathOperationResult {
         if (operation === CalculatorOperation.Add) {
           return E.left(a + b);
@@ -53,7 +59,7 @@ describe("Calculator tests", () => {
         }
         return O.fromNullable(displayNumber);
       }, initState(): CalculatorState {
-        return {display: "", pendingOperation: O.none()};
+        return {allowAppend: false, display: "", pendingOperation: O.none()};
       }, setDisplayNumber(number: CalculatorNumber): CalculatorDisplay {
         return "";
       }, updateDisplayFromDigit(digit: CalculatorDigit, display: CalculatorDisplay): CalculatorDisplay {
@@ -62,9 +68,9 @@ describe("Calculator tests", () => {
     }
 
     let calculatorState = Calculator.updateDisplayFromPendingOp(services,
-        {display: "1", pendingOperation: O.fromNullable([CalculatorOperation.Add, 2])});
+        {allowAppend: false, display: "1", pendingOperation: O.fromNullable([CalculatorOperation.Add, 2])});
 
     expect(calculatorState.display).toBe("");
-    expect(calculatorState.pendingOperation).toEqual(O.fromNullable([0, 2]));
+    expect(calculatorState.pendingOperation).toEqual(O.none());
   })
 });
