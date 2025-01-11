@@ -68,30 +68,34 @@ export type CalculatorServices = {
     getPendingOpsFromState: GetPendingOpsFromState
 };
 
+function calculateFromZeroState(calculatorState: { state: "zero"; value: ZeroStateData }, input: CalculatorInput) {
+    let result: CalculatorState = calculatorState;
+    if (input.type === 'digit') {
+        result = {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
+    }
+    if (input.type === 'decimalSeparator') {
+        result = {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}};
+    }
+    if (input.type === 'clear') {
+        result = calculatorState;
+    }
+    if (input.type === 'equal') {
+        result = {state: "computed", value: {displayNumber: 0, pendingOp: O.none()}};
+    }
+    if (input.type === 'op') {
+        result = {
+            state: "computed",
+            value: {displayNumber: 0, pendingOp: O.some([{op: input.value.op}, 0])}
+        };
+    }
+    return result;
+}
+
 export function createCalculate(calculatorService: CalculatorServices): Calculate {
     return (input: CalculatorInput, calculatorState: CalculatorState): CalculatorState => {
         switch (calculatorState.state) {
             case 'zero':
-                let result: CalculatorState = calculatorState;
-                if (input.type === 'digit') {
-                    result = {state: "accumulator", value: {digit: input.value.toString(), pendingOp: O.none()}};
-                }
-                if (input.type === 'decimalSeparator') {
-                    result =  {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}};
-                }
-                if (input.type === 'clear') {
-                    result = calculatorState;
-                }
-                if (input.type === 'equal') {
-                    result = {state: "computed", value: {displayNumber: 0, pendingOp: O.none()}};
-                }
-                if (input.type === 'op') {
-                    result = {
-                        state: "computed",
-                        value: {displayNumber: 0, pendingOp: O.some([{op: input.value.op}, 0])}
-                    };
-                }
-                return result;
+                return calculateFromZeroState(calculatorState, input);
             case 'accumulator':
                 if (input.type === 'digit') {
                     return {
