@@ -229,7 +229,7 @@ describe("Calculator tests", () => {
   });
 
   // accumulatorWithDecimal state
-  describe.skip("accumulatorWithDecimal state", () => {
+  describe("accumulatorWithDecimal state", () => {
     test("in accumulatorWithDecimal state, pressing zero appends zero to the digit buffer", () => {
       const services = createServices();
       const calculate = createCalculate(services);
@@ -242,12 +242,12 @@ describe("Calculator tests", () => {
       const newState = calculate({type: "zero"}, initialState);
 
       expect(newState).toEqual({
-        state: "accumulator",
+        state: "accumulatorWithDecimal",
         value: {digit: "5.0", pendingOp: O.none()}
       });
     });
 
-    test("in accumulatorWithDecimal state, pressing a digit appends it to the buffer", () => {
+    test.skip("in accumulatorWithDecimal state, pressing a digit appends it to the buffer", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
@@ -259,12 +259,12 @@ describe("Calculator tests", () => {
       const newState = calculate({type: "digit", value: new CalculatorNonZeroDigit(3)}, initialState);
 
       expect(newState).toEqual({
-        state: "accumulator",
+        state: "accumulatorWithDecimal",
         value: {digit: "5.3", pendingOp: O.none()}
       });
     });
 
-    test("in accumulatorWithDecimal state, pressing decimal separator does nothing", () => {
+    test.skip("in accumulatorWithDecimal state, pressing decimal separator does nothing", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
@@ -278,7 +278,7 @@ describe("Calculator tests", () => {
       expect(newState).toEqual(initialState);
     });
 
-    test("in accumulatorWithDecimal state, pressing clear transitions to zero state", () => {
+    test.skip("in accumulatorWithDecimal state, pressing clear transitions to zero state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
@@ -292,7 +292,7 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "zero", value: O.none()});
     });
 
-    test("in accumulatorWithDecimal state, pressing equals computes the result and transitions to computed state", () => {
+    test.skip("in accumulatorWithDecimal state, pressing equals computes the result and transitions to computed state", () => {
     });
   });
 

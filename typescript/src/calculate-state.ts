@@ -147,9 +147,32 @@ function calculateFromAccumulatorState(calculatorState: { state: "accumulator"; 
     return newState;
 }
 
+function calculateFromAccumulatorWithDecimalState(calculatorState: {
+    state: "accumulatorWithDecimal";
+    value: AccumulatorStateData
+}, input: CalculatorInput, calculatorService: CalculatorServices) {
+  let newState: CalculatorState = calculatorState;
+
+  if (input.type === 'zero') {
+    newState = {
+      state: "accumulatorWithDecimal",
+      value: { digit: calculatorState.value.digit + "0", pendingOp: O.none() }
+    };
+  }
+
+    return newState;
+}
+
 export function createCalculate(calculatorService: CalculatorServices): Calculate {
     return (input: CalculatorInput, calculatorState: CalculatorState): CalculatorState => {
         switch (calculatorState.state) {
+            case "accumulatorWithDecimal":
+                return calculateFromAccumulatorWithDecimalState(calculatorState, input, calculatorService);
+                break;
+            case "computed":
+                break;
+            case "error":
+                break;
             case 'zero':
                 return calculateFromZeroState(calculatorState, input);
             case 'accumulator':
