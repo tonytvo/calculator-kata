@@ -278,7 +278,7 @@ describe("Calculator tests", () => {
       expect(newState).toEqual(initialState);
     });
 
-    test.skip("in accumulatorWithDecimal state, pressing clear transitions to zero state", () => {
+    test("in accumulatorWithDecimal state, pressing clear transitions to zero state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 

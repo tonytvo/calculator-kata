@@ -169,6 +169,7 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
         case "decimalSeparator":
             break;
         case "clear":
+            newState = {state: "zero", value: O.none()};
             break;
         case "equal":
             break;
