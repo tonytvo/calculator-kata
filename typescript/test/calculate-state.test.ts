@@ -403,7 +403,6 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "zero", value: O.none()});
     });
 
-
     test("in computed state, pressing zero with pending ops transitions to zero state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
@@ -509,6 +508,23 @@ describe("Calculator tests", () => {
       const initialState: CalculatorState = {
         state: "computed",
         value: {displayNumber: 5, pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "op", value: {op: '+'}}, initialState);
+
+      expect(newState).toEqual({
+        state: "computed",
+        value: {displayNumber: 5, pendingOp: O.some([{op: '+'}, 5])}
+      });
+    });
+
+    test("in computed state given pending ops , pressing a math operation sets a new pending operation", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "computed",
+        value: {displayNumber: 5, pendingOp: O.some([{op: '-'}, 5])}
       };
 
       const newState = calculate({type: "op", value: {op: '+'}}, initialState);
