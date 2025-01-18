@@ -536,6 +536,90 @@ describe("Calculator tests", () => {
     });
   });
 
-  // error state
+  describe("error state", () => {
+    test("in error state, pressing clear transitions to zero state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "error",
+        value: MathOperationError.DivideByZero
+      };
+
+      const newState = calculate({type: "clear"}, initialState);
+
+      expect(newState).toEqual({state: "zero", value: O.none()});
+    });
+
+    test("in error state, pressing zero stays in error state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "error",
+        value: MathOperationError.DivideByZero
+      };
+
+      const newState = calculate({type: "zero"}, initialState);
+
+      expect(newState).toEqual(initialState);
+    });
+
+    test("in error state, pressing a digit stays in error state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "error",
+        value: MathOperationError.DivideByZero
+      };
+
+      const newState = calculate({type: "digit", value: new CalculatorNonZeroDigit(1)}, initialState);
+
+      expect(newState).toEqual(initialState);
+    });
+
+    test("in error state, pressing decimal separator stays in error state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "error",
+        value: MathOperationError.DivideByZero
+      };
+
+      const newState = calculate({type: "decimalSeparator"}, initialState);
+
+      expect(newState).toEqual(initialState);
+    });
+
+    test("in error state, pressing equals stays in error state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "error",
+        value: MathOperationError.DivideByZero
+      };
+
+      const newState = calculate({type: "equal"}, initialState);
+
+      expect(newState).toEqual(initialState);
+    });
+
+    test("in error state, pressing a math operation stays in error state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "error",
+        value: MathOperationError.DivideByZero
+      };
+
+      const newState = calculate({type: "op", value: {op: '+'}}, initialState);
+
+      expect(newState).toEqual(initialState);
+    });
+  });
 
 });

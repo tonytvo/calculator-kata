@@ -260,6 +260,16 @@ function calculateFromComputedState(calculatorState: {
     return newState;
 }
 
+function calculateFromErrorState(calculatorState: { state: "error"; value: ErrorStateData }, input: CalculatorInput) {
+    let newState: CalculatorState = calculatorState;
+    switch (input.type) {
+        case 'clear':
+            newState = {state: "zero", value: O.none()};
+            break;
+    }
+    return newState;
+}
+
 export function createCalculate(calculatorService: CalculatorServices): Calculate {
     return (input: CalculatorInput, calculatorState: CalculatorState): CalculatorState => {
         switch (calculatorState.state) {
@@ -270,6 +280,7 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                 return calculateFromComputedState(calculatorState, input, calculatorService);
                 break;
             case "error":
+                return calculateFromErrorState(calculatorState, input);
                 break;
             case 'zero':
                 return calculateFromZeroState(calculatorState, input);
