@@ -401,18 +401,18 @@ describe("Calculator tests", () => {
     });
 
 
-    test.skip("in computed state, pressing zero with pending ops transitions to zero state", () => {
+    test("in computed state, pressing zero with pending ops transitions to zero state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
       const initialState: CalculatorState = {
         state: "computed",
-        value: {displayNumber: 5, pendingOp: O.none()}
+        value: {displayNumber: 5, pendingOp: O.some([{op: '+'}, 10])}
       };
 
       const newState = calculate({type: "zero"}, initialState);
 
-      expect(newState).toEqual({state: "zero", value: O.none()});
+      expect(newState).toEqual({state: "zero", value: O.some([{op: '+'}, 10])});
     });
 
     test.skip("in computed state, pressing a digit transitions to accumulator state", () => {

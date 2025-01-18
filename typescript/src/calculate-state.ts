@@ -222,7 +222,7 @@ function calculateFromComputedState(calculatorState: {
     let newState: CalculatorState = calculatorState;
     switch (input.type) {
         case 'zero':
-            newState = {state: "zero", value: O.none()};
+            newState = {state: "zero", value: calculatorState.value.pendingOp};
             break;
     }
     return newState;
