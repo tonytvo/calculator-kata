@@ -91,7 +91,10 @@ function calculateFromZeroState(calculatorState: { state: "zero"; value: ZeroSta
     return result;
 }
 
-function calculateFromAccumulatorState(calculatorState: { state: "accumulator"; value: AccumulatorStateData }, input: CalculatorInput, calculatorService: CalculatorServices) {
+function calculateFromAccumulatorState(calculatorState: {
+    state: "accumulator";
+    value: AccumulatorStateData
+}, input: CalculatorInput, calculatorService: CalculatorServices) {
     let newState: CalculatorState = calculatorState;
     if (input.type === 'digit') {
         newState = {
@@ -151,7 +154,7 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
     state: "accumulatorWithDecimal";
     value: AccumulatorStateData
 }, input: CalculatorInput, calculatorService: CalculatorServices) {
-  let newState: CalculatorState = calculatorState;
+    let newState: CalculatorState = calculatorState;
 
     switch (input.type) {
         case 'zero':
@@ -187,7 +190,25 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
                 }
             }
             break;
-        case "op":
+        case "op": {
+            const rightOperand = calculatorService.getNumberFromAccumulator(calculatorState.value);
+            const pendingOp = calculatorState.value.pendingOp;
+            if (O.isSome(pendingOp)) {
+                const [op, leftOperand] = pendingOp.value;
+                const result = calculatorService.doMathOperation(op, leftOperand, rightOperand);
+                if (E.isLeft(result)) {
+                    newState = {
+                        state: "computed",
+                        value: {displayNumber: result.left, pendingOp: O.some([{op: input.value.op}, result.left])}
+                    };
+                }
+            } else {
+                newState = {
+                    state: "accumulatorWithDecimal",
+                    value: {digit: calculatorState.value.digit, pendingOp: O.some([{op: input.value.op}, rightOperand])}
+                };
+            }
+        }
             break;
     }
 
