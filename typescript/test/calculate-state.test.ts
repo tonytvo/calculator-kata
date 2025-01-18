@@ -415,7 +415,7 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "zero", value: O.some([{op: '+'}, 10])});
     });
 
-    test.skip("in computed state, pressing a digit transitions to accumulator state", () => {
+    test("in computed state, pressing a digit transitions to accumulator state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
@@ -427,6 +427,20 @@ describe("Calculator tests", () => {
       const newState = calculate({type: "digit", value: new CalculatorNonZeroDigit(1)}, initialState);
 
       expect(newState).toEqual({state: "accumulator", value: {digit: "1", pendingOp: O.none()}});
+    });
+
+    test("in computed state with pending ops, pressing a digit transitions to accumulator state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "computed",
+        value: {displayNumber: 5, pendingOp: O.some([{op: '+'}, 5])}
+      };
+
+      const newState = calculate({type: "digit", value: new CalculatorNonZeroDigit(1)}, initialState);
+
+      expect(newState).toEqual({state: "accumulator", value: {digit: "1", pendingOp: O.some([{op: '+'}, 5])}});
     });
 
     test("in computed state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
