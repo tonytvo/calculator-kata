@@ -207,7 +207,10 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
             } else {
                 newState = {
                     state: "computed",
-                    value: {displayNumber: Number(calculatorState.value.digit), pendingOp: O.some([{op: input.value.op}, rightOperand])}
+                    value: {
+                        displayNumber: Number(calculatorState.value.digit),
+                        pendingOp: O.some([{op: input.value.op}, rightOperand])
+                    }
                 };
             }
         }
@@ -227,10 +230,19 @@ function calculateFromComputedState(calculatorState: {
             newState = {state: "zero", value: calculatorState.value.pendingOp};
             break;
         case 'decimalSeparator':
-            newState = {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: calculatorState.value.pendingOp}};
+            newState = {
+                state: "accumulatorWithDecimal",
+                value: {digit: "0.", pendingOp: calculatorState.value.pendingOp}
+            };
             break;
         case 'digit':
-            newState = {state: "accumulator", value: {digit: input.value.toString(), pendingOp: calculatorState.value.pendingOp}};
+            newState = {
+                state: "accumulator",
+                value: {digit: input.value.toString(), pendingOp: calculatorState.value.pendingOp}
+            };
+            break;
+        case 'clear':
+            newState = {state: "zero", value: O.none()};
             break;
     }
     return newState;

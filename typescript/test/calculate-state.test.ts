@@ -471,7 +471,7 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.some([{op: '+'}, 5])}});
     });
 
-    test.skip("in computed state, pressing clear transitions to zero state", () => {
+    test("in computed state, pressing clear transitions to zero state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
