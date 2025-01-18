@@ -443,6 +443,20 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}});
     });
 
+    test("in computed state, pressing decimal separator with pending ops transitions to accumulatorWithDecimal state", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "computed",
+        value: {displayNumber: 5, pendingOp: O.some([{op: '+'}, 5])}
+      };
+
+      const newState = calculate({type: "decimalSeparator"}, initialState);
+
+      expect(newState).toEqual({state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.some([{op: '+'}, 5])}});
+    });
+
     test.skip("in computed state, pressing clear transitions to zero state", () => {
       const services = createServices();
       const calculate = createCalculate(services);

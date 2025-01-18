@@ -43,8 +43,10 @@ interface CalculatorAction {
 }
 
 type CalculatorDisplay = string;
+//todo we should make all statedata should have similar structure, ZeroStateData should be {pendingOp: PendingOp}
 type ZeroStateData = PendingOp;
 export type DigitAccumulator = string;
+//todo should rename digit to something that indicates it is being used to accumulate multiple digits
 export type AccumulatorStateData = { digit: DigitAccumulator, pendingOp: PendingOp };
 type ComputedStateData = { displayNumber: CalculatorNumber, pendingOp: PendingOp };
 type ErrorStateData = MathOperationError;
@@ -225,7 +227,7 @@ function calculateFromComputedState(calculatorState: {
             newState = {state: "zero", value: calculatorState.value.pendingOp};
             break;
         case 'decimalSeparator':
-            newState = {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}};
+            newState = {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: calculatorState.value.pendingOp}};
             break;
     }
     return newState;
