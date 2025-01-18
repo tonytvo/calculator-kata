@@ -429,7 +429,7 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "accumulator", value: {digit: "1", pendingOp: O.none()}});
     });
 
-    test.skip("in computed state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
+    test("in computed state, pressing decimal separator transitions to accumulatorWithDecimal state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 

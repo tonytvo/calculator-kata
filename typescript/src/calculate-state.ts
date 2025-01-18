@@ -224,6 +224,9 @@ function calculateFromComputedState(calculatorState: {
         case 'zero':
             newState = {state: "zero", value: calculatorState.value.pendingOp};
             break;
+        case 'decimalSeparator':
+            newState = {state: "accumulatorWithDecimal", value: {digit: "0.", pendingOp: O.none()}};
+            break;
     }
     return newState;
 }
