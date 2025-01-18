@@ -215,6 +215,19 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
     return newState;
 }
 
+function calculateFromComputedState(calculatorState: {
+    state: "computed";
+    value: ComputedStateData
+}, input: CalculatorInput, calculatorService: CalculatorServices) {
+    let newState: CalculatorState = calculatorState;
+    switch (input.type) {
+        case 'zero':
+            newState = {state: "zero", value: O.none()};
+            break;
+    }
+    return newState;
+}
+
 export function createCalculate(calculatorService: CalculatorServices): Calculate {
     return (input: CalculatorInput, calculatorState: CalculatorState): CalculatorState => {
         switch (calculatorState.state) {
@@ -222,6 +235,7 @@ export function createCalculate(calculatorService: CalculatorServices): Calculat
                 return calculateFromAccumulatorWithDecimalState(calculatorState, input, calculatorService);
                 break;
             case "computed":
+                return calculateFromComputedState(calculatorState, input, calculatorService);
                 break;
             case "error":
                 break;
