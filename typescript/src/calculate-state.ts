@@ -244,6 +244,12 @@ function calculateFromComputedState(calculatorState: {
         case 'clear':
             newState = {state: "zero", value: O.none()};
             break;
+        case 'equal':
+            newState = {
+                state: "computed",
+                value: {displayNumber: calculatorState.value.displayNumber, pendingOp: O.none()}
+            };
+            break;
     }
     return newState;
 }

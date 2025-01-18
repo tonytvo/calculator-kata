@@ -486,13 +486,13 @@ describe("Calculator tests", () => {
     });
 
     // todo - add tests for pressing equals given a pending operation
-    test.skip("in computed state, pressing equals transitions to computed state", () => {
+    test("in computed state, pressing equals transitions to computed state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
       const initialState: CalculatorState = {
         state: "computed",
-        value: {displayNumber: 5, pendingOp: O.none()}
+        value: {displayNumber: 5, pendingOp: O.some([{op: '+'}, 5])}
       };
 
       const newState = calculate({type: "equal"}, initialState);
