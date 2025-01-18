@@ -56,6 +56,10 @@ function createServices() {
 
 describe("Calculator tests", () => {
   describe("accumulator state", () => {
+
+    // todo - add tests for error cases when evaluate the equal input
+    // todo - add tests for minus and divide operations with operands in different order
+
     test("in accumulator state, pressing zero appends zero to the digit buffer", () => {
       const services = createServices();
       const calculate = createCalculate(services);
@@ -247,7 +251,6 @@ describe("Calculator tests", () => {
     });
   });
 
-  // accumulatorWithDecimal state
   describe("accumulatorWithDecimal state", () => {
     test("in accumulatorWithDecimal state, pressing zero appends zero to the digit buffer", () => {
       const services = createServices();
@@ -485,7 +488,6 @@ describe("Calculator tests", () => {
       expect(newState).toEqual({state: "zero", value: O.none()});
     });
 
-    // todo - add tests for pressing equals given a pending operation
     test("in computed state, pressing equals transitions to computed state", () => {
       const services = createServices();
       const calculate = createCalculate(services);
@@ -499,10 +501,24 @@ describe("Calculator tests", () => {
 
       expect(newState).toEqual({state: "computed", value: {displayNumber: 5, pendingOp: O.none()}});
     });
+
+    test("in computed state, pressing a math operation sets a new pending operation", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "computed",
+        value: {displayNumber: 5, pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "op", value: {op: '+'}}, initialState);
+
+      expect(newState).toEqual({
+        state: "computed",
+        value: {displayNumber: 5, pendingOp: O.some([{op: '+'}, 5])}
+      });
+    });
   });
-  // todo - add tests for error cases when evaluate the equal input
-  // todo - add tests for minus and divide operations with operands in different order
-  // computed state
 
   // error state
 

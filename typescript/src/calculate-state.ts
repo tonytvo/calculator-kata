@@ -250,6 +250,12 @@ function calculateFromComputedState(calculatorState: {
                 value: {displayNumber: calculatorState.value.displayNumber, pendingOp: O.none()}
             };
             break;
+        case 'op':
+            newState = {
+                state: "computed",
+                value: {displayNumber: calculatorState.value.displayNumber, pendingOp: O.some([{op: input.value.op}, calculatorState.value.displayNumber])}
+            };
+            break;
     }
     return newState;
 }
