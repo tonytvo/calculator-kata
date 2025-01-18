@@ -1,5 +1,6 @@
 import {Either as E, Option as O, pipe} from "effect";
 
+// todo combine calculator and calculator-state as they have similar types
 type CalculatorInput = { tag: "CalculatorDigit", value: CalculatorDigit } |
     { tag: "CalculatorOperation", value: CalculatorOperation } |
     { tag: "CalculatorAction", value: CalculatorAction };

@@ -7,6 +7,7 @@ import {
 } from "@/Calculator";
 import {Either as E, Option as O, pipe} from "effect";
 
+// todo state should be enum
 export type CalculatorState =
     { state: 'zero', value: ZeroStateData }
     | { state: 'accumulator', value: AccumulatorStateData }
@@ -43,7 +44,7 @@ interface CalculatorAction {
 }
 
 type CalculatorDisplay = string;
-//todo we should make all statedata should have similar structure, ZeroStateData should be {pendingOp: PendingOp}
+//todo we should make all state data should have similar structure, ZeroStateData should be {pendingOp: PendingOp}
 type ZeroStateData = PendingOp;
 export type DigitAccumulator = string;
 //todo should rename digit to something that indicates it is being used to accumulate multiple digits
@@ -98,6 +99,7 @@ function calculateFromAccumulatorState(calculatorState: {
     value: AccumulatorStateData
 }, input: CalculatorInput, calculatorService: CalculatorServices) {
     let newState: CalculatorState = calculatorState;
+    // todo use switch for consistent convention in the code base
     if (input.type === 'digit') {
         newState = {
             state: "accumulator",
@@ -119,6 +121,7 @@ function calculateFromAccumulatorState(calculatorState: {
     } else if (input.type === 'equal') {
         const number1 = calculatorService.getNumberFromAccumulator(calculatorState.value);
         const pendingOp = calculatorState.value.pendingOp;
+        // todo use functional paradigm like map
         if (O.isSome(pendingOp)) {
             const [op, number2] = pendingOp.value;
             const result = calculatorService.doMathOperation(op, number2, number1);
@@ -132,6 +135,7 @@ function calculateFromAccumulatorState(calculatorState: {
     } else if (input.type === 'op') {
         const rightOperand = calculatorService.getNumberFromAccumulator(calculatorState.value);
         const pendingOp = calculatorState.value.pendingOp;
+        // todo remove this duplication to actually do the computation
         if (O.isSome(pendingOp)) {
             const [op, leftOperand] = pendingOp.value;
             const result = calculatorService.doMathOperation(op, leftOperand, rightOperand);
@@ -179,6 +183,7 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
         case "equal":
             const rightOperand = calculatorService.getNumberFromAccumulator(calculatorState.value);
             const pendingOp = calculatorState.value.pendingOp;
+            // todo remove this duplication to actually do the computation
             if (O.isSome(pendingOp)) {
                 const [op, leftOperand] = pendingOp.value;
                 const result = calculatorService.doMathOperation(op, leftOperand, rightOperand);
@@ -195,6 +200,7 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
         case "op": {
             const rightOperand = calculatorService.getNumberFromAccumulator(calculatorState.value);
             const pendingOp = calculatorState.value.pendingOp;
+            // todo remove this duplication to actually do the computation
             if (O.isSome(pendingOp)) {
                 const [op, leftOperand] = pendingOp.value;
                 const result = calculatorService.doMathOperation(op, leftOperand, rightOperand);
@@ -253,7 +259,10 @@ function calculateFromComputedState(calculatorState: {
         case 'op':
             newState = {
                 state: "computed",
-                value: {displayNumber: calculatorState.value.displayNumber, pendingOp: O.some([{op: input.value.op}, calculatorState.value.displayNumber])}
+                value: {
+                    displayNumber: calculatorState.value.displayNumber,
+                    pendingOp: O.some([{op: input.value.op}, calculatorState.value.displayNumber])
+                }
             };
             break;
     }
