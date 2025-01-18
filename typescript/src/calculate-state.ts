@@ -128,11 +128,11 @@ function calculateFromAccumulatorState(calculatorState: {
             }
         }
     } else if (input.type === 'op') {
-        const number1 = calculatorService.getNumberFromAccumulator(calculatorState.value);
+        const rightOperand = calculatorService.getNumberFromAccumulator(calculatorState.value);
         const pendingOp = calculatorState.value.pendingOp;
         if (O.isSome(pendingOp)) {
-            const [op, number2] = pendingOp.value;
-            const result = calculatorService.doMathOperation(op, number2, number1);
+            const [op, leftOperand] = pendingOp.value;
+            const result = calculatorService.doMathOperation(op, leftOperand, rightOperand);
             if (E.isLeft(result)) {
                 newState = {
                     state: "computed",
@@ -141,8 +141,8 @@ function calculateFromAccumulatorState(calculatorState: {
             }
         } else {
             newState = {
-                state: "accumulator",
-                value: {digit: calculatorState.value.digit, pendingOp: O.some([{op: input.value.op}, number1])}
+                state: "computed",
+                value: {displayNumber: rightOperand, pendingOp: O.some([{op: input.value.op}, rightOperand])}
             };
         }
     }
@@ -204,8 +204,8 @@ function calculateFromAccumulatorWithDecimalState(calculatorState: {
                 }
             } else {
                 newState = {
-                    state: "accumulatorWithDecimal",
-                    value: {digit: calculatorState.value.digit, pendingOp: O.some([{op: input.value.op}, rightOperand])}
+                    state: "computed",
+                    value: {displayNumber: Number(calculatorState.value.digit), pendingOp: O.some([{op: input.value.op}, rightOperand])}
                 };
             }
         }

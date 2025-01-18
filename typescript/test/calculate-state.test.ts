@@ -154,6 +154,23 @@ describe("Calculator tests", () => {
         value: {displayNumber: 15, pendingOp: O.some([{op: '-'}, 15])}
       });
     });
+
+    test("in accumulator state, pressing a math operation without pending op return new computed state and sets a new pending operation", () => {
+      const services = createServices();
+      const calculate = createCalculate(services);
+
+      const initialState: CalculatorState = {
+        state: "accumulator",
+        value: {digit: "5", pendingOp: O.none()}
+      };
+
+      const newState = calculate({type: "op", value: {op: '-'}}, initialState);
+
+      expect(newState).toEqual({
+        state: "computed",
+        value: {displayNumber: 5, pendingOp: O.some([{op: '-'}, 5])}
+      });
+    });
   });
 
   describe("zero state", () => {
@@ -345,7 +362,7 @@ describe("Calculator tests", () => {
 
     });
 
-    test.skip("in accumulatorWithDecimal state with no pendingOp, pressing a math operation sets a new pending operation", () => {
+    test("in accumulatorWithDecimal state with no pendingOp, pressing a math operation sets a new pending operation", () => {
       const services = createServices();
       const calculate = createCalculate(services);
 
